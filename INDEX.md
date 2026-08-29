@@ -39,12 +39,12 @@ Do **not** use superseded numbering (e.g. Identity as Layer 2 from older Bluepri
 - [API & Event Architecture](./03_Technical_Infrastructure_Standards/)
 
 ### 4. SaaS Core Platform Layers (Database)
-- [Layer 1: SaaS Platform Business (folder alias: SaaS Business)](./04_SaaS_Core_Platform_Layers/Layer_1_SaaS_Business/Database%20Layer%201%20-%20SaaS%20Business%20Layer.md)
+- [Layer 1: SaaS Platform Business](./04_SaaS_Core_Platform_Layers/Layer_1_SaaS_Platform_Business/Database%20Layer%201%20-%20SaaS%20Platform%20Business%20Layer.md)
 - [Layer 2: SaaS Admin](./04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/Database%20Layer%202%20-%20SaaS%20Admin%20Layer.md)
 - [Layer 3: Partner & Affiliate](./04_SaaS_Core_Platform_Layers/Layer_3_Partner_Affiliate/Database%20Layer%203%20-%20Partner%20Layer.md)
 
 ### 5. Identity & Master Data / Foundation
-- [Layer 4: Identity & Access Core](./05_Identity_&_Master_Data_Layer/Layer_4_Identity_Core/Database%20Layer%204%20-%20ERP%20Core%20Identity%20Organization%20Layer.md) *(file title legacy; content scope = Identity; Organization is Layer 5)*
+- [Layer 4: Identity & Access Core](./05_Identity_&_Master_Data_Layer/Layer_4_Identity_Core/Database%20Layer%204%20-%20Identity%20%26%20Access%20Core.md)
 - [Layer 5 Master Data](./05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ERP%20SaaS%20Master%20Data%20Architecture%20Standard%20v1.1.md)
 
 ### 6. Vertical ERP Modules (Layer 6)

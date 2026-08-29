@@ -1,470 +1,128 @@
 # ERP SaaS Module Architecture Map v1
 
-- **Version:** 1.0
-- **Last Updated:** 2026-08-18
+- **Version:** 1.1
+- **Last Updated:** 2026-08-29
 - **Category:** System Blueprint & Roadmaps
-- **Status:** Draft / Approved
+- **Status:** Approved (aligned with ADD_Layer_Module_Code_Mapping_v1.0)
 - **Source:** HamarehERP Architecture Documentation
 
 ---
 
-__ERP SaaS Module Architecture Map v1.0__
+__ERP SaaS Module Architecture Map v1.1__
 
 __وضعیت سند__
 
 __عنوان:__ نقشه معماری ماژول‌های ERP SaaS  
-__نسخه:__ 1.0 Draft  
+__نسخه:__ 1.1  
 __هدف:__ تعریف ساختار کلان ماژول‌های سیستم، مرزبندی مسئولیت‌ها، ترتیب توسعه و وابستگی بین بخش‌ها
+
+**شماره‌گذاری لایه‌ها:** طبق  
+`ADD_Layer_Module_Code_Mapping_v1.0.md` (SSOT).
 
 __1. هدف سند__
 
-این سند به عنوان مرجع اصلی برای تصمیم‌گیری در خصوص ایجاد، توسعه و ارتباط ماژول‌های ERP SaaS استفاده می‌شود.
+این سند مرجع اصلی برای تصمیم‌گیری در خصوص ایجاد، توسعه و ارتباط ماژول‌های ERP SaaS است.
 
-تمام توسعه‌های آینده باید بر اساس این نقشه انجام شود تا:
+تمام توسعه‌های آینده باید بر اساس این نقشه و SSOT لایه‌ها انجام شود تا:
 
 - از ایجاد ماژول‌های موازی و تکراری جلوگیری شود.
 - مرز مسئولیت هر ماژول مشخص باشد.
 - وابستگی‌های بین ماژول‌ها کنترل شود.
 - توسعه مرحله‌ای سیستم بدون بازطراحی اساسی امکان‌پذیر باشد.
-- معماری Modular Monolith در شروع و امکان Evolution به Microservices در آینده حفظ شود.
+- معماری Modular Monolith در شروع و امکان Evolution به Microservices حفظ شود.
 
 __2. اصول حاکم بر طراحی ماژول‌ها__
 
-تمام ماژول‌های سیستم باید از قوانین معماری بالادستی پروژه پیروی کنند:
-
 __2.1 استقلال ماژول‌ها__
 
-هر ماژول باید:
-
-- مالک داده‌های داخلی خود باشد.
-- منطق کسب‌وکار خود را مدیریت کند.
-- از دسترسی مستقیم سایر ماژول‌ها به جداول داخلی خود جلوگیری کند.
-
-ارتباط بین ماژول‌ها فقط از طریق:
-
-- API
-- Service Interface
-- Domain Event
-
-انجام می‌شود.
+هر ماژول مالک داده‌های داخلی و منطق کسب‌وکار خود است. ارتباط فقط از طریق API، Service Interface، Domain Event.
 
 __2.2 عدم Coupling مستقیم دیتابیس__
 
-هیچ ماژولی اجازه ندارد:
-
-- به جداول داخلی ماژول دیگر Foreign Key مستقیم ایجاد کند.
-- Query مستقیم روی جداول ماژول دیگر انجام دهد.
-
-ارتباط داده‌ای فقط از طریق:
-
-- Logical Reference
-- API
-- Event
-
-انجام می‌شود.
+FK فیزیکی بین Bounded Contextهای مستقل ممنوع. ارتباط: Logical Reference (UUID)، API، Event.
 
 __2.3 Tenant Isolation__
 
-در تمام ماژول‌هایی که داده عملیاتی مشتری را نگهداری می‌کنند:
+در داده‌های عملیاتی مشتری: `tenant_id` الزامی. نشت اطلاعات بین مشتریان خط قرمز است.
 
-وجود tenant_id الزامی است.
+__3. ساختار کلان لایه‌ها (قفل‌شده 2026-08-29)__
 
-هیچ سرویس، API یا Query بدون اعمال محدودیت Tenant اجازه دسترسی به داده‌ها را ندارد.
+__Layer 1: SaaS Platform Business__
 
-نشت اطلاعات بین مشتریان (Data Bleeding) خط قرمز سیستم است.
+کد: `SaasPlatform`
 
-__3. ساختار کلان لایه‌ها__
+- Tenant Management
+- Subscription & Billing (Plans, Subscription, Platform Invoice, Wallet, Coupon)
 
-معماری سیستم به پنج بخش اصلی تقسیم می‌شود:
+نام پوشه Database «SaaS Business» = alias؛ نام رسمی لایه = SaaS Platform Business.
 
-__Layer 1: SaaS Platform Layer__
+__Layer 2: SaaS Admin__
 
-__هدف:__
+کد: `SaasAdmin`
 
-مدیریت خود پلتفرم SaaS و ارتباط تجاری با مشتریان.
+- Admin Users / Roles / Permissions
+- Audit & Logging
+- System Configuration
+- Notification Center (پلتفرم)
+- Support & Ticketing
 
-__ماژول‌ها:__
+__Layer 3: Partner & Affiliate__
 
-__1. Tenant Management__
+- Partners، assignments، commissions، payouts
 
-مسئول:
+__Layer 4: Identity & Access Core__
 
-مدیریت مشتریان سیستم SaaS
+کد: `IdentityCore`
 
-شامل:
+- Users، Credentials، Profiles
+- Tenant Membership
+- Authorization: Roles، Permissions، Scopes
 
-- Tenant Registration
-- Tenant Profile
-- Tenant Domain
-- Tenant Status
-- Tenant Configuration
+Organization در این لایه نیست.
 
-وابستگی:
+__Layer 5: ERP Foundation__
 
-هیچ وابستگی به ERP ندارد.
+- Organization (`Organization`): Companies، Branches، Departments
+- Master Data (`MasterData`)
+- Document Management (`DocumentManagement`)
+- Workflow Engine (آینده)
 
-__2. Subscription & Billing__
-
-مسئول:
-
-مدیریت مدل درآمدی SaaS
-
-شامل:
-
-- Plans
-- Plan Versions
-- Features
-- Addons
-- Subscription
-- Invoice
-- Payment
-
-__3. Payment Gateway__
-
-مسئول:
-
-مدیریت اتصال به سرویس‌های پرداخت.
-
-شامل:
-
-- Payment Provider
-- Transaction
-- Payment Status
-- Callback Handling
-
-__4. Notification Center__
-
-مسئول:
-
-مرکز ارسال پیام‌های سیستم.
-
-شامل:
-
-- Email Notification
-- SMS Notification
-- In-App Notification
-- Template Management
-- Notification Queue
-
-__Layer 2: Platform Administration Layer__
-
-__هدف:__
-
-مدیریت داخلی پلتفرم توسط تیم مالک سیستم.
-
-__ماژول‌ها:__
-
-__1. Admin Management__
-
-شامل:
-
-- Admin Users
-- Admin Roles
-- Admin Permissions
-
-__2. Audit & Logging__
-
-مسئول:
-
-ثبت تمام فعالیت‌های حساس.
-
-شامل:
-
-- User Activity
-- Security Events
-- Data Change Tracking
-
-__3. System Configuration__
-
-شامل:
-
-- Global Settings
-- Environment Configuration
-- Feature Configuration
-
-__4. Support & Ticketing__
-
-مسئول:
-
-ارتباط پشتیبانی بین مشتری و تیم SaaS.
-
-شامل:
-
-- Ticket
-- Conversation
-- Priority
-- Assignment
-- Status Flow
-
-__Layer 3: Identity & Access Core__
-
-__هدف:__
-
-هسته امنیت و کنترل دسترسی کل سیستم.
-
-__ماژول‌ها:__
-
-__1. Identity Management__
-
-شامل:
-
-- Users
-- Credentials
-- Profiles
-
-__2. Tenant Membership__
-
-شامل:
-
-- Tenant Users
-- User Membership
-
-__3. Authorization__
-
-شامل:
-
-- Roles
-- Permissions
-- Scopes
-- Access Rules
-
-__Layer 4: ERP Core Foundation__
-
-__هدف:__
-
-ارائه زیرساخت مشترک تمام ماژول‌های ERP.
-
-__ماژول‌ها:__
-
-__1. Organization Management__
-
-مسئول ساختار سازمانی مشتری.
-
-شامل:
-
-- Companies
-- Branches
-- Departments
-
-__2. Master Data Management__
-
-اطلاعات پایه مشترک.
-
-شامل:
-
-- Categories
-- Units
-- Currencies
-- Tax Rules
-
-__3. Document Management__
-
-مدیریت فایل‌ها و اسناد.
-
-شامل:
-
-- Attachments
-- Files
-- Document Metadata
-
-__4. Workflow Engine__
-
-مدیریت فرآیندهای تایید.
-
-شامل:
-
-- Workflow Definition
-- Approval Steps
-- Execution History
-
-__Layer 5: ERP Business Modules__
-
-__هدف:__
-
-ماژول‌های تخصصی کسب‌وکار.
+__Layer 6: ERP Business Modules__
 
 ترتیب پیشنهادی توسعه:
 
-__Module 1: Accounting & Finance__
+1. Accounting & Finance
+2. Inventory & Warehouse
+3. Sales & CRM / Purchase (Procurement & Sales)
+4. Human Resource
+5. Manufacturing
+6. Project Management
 
-اولین ماژول اصلی ERP
+__Layer 7: Extensions & Integrations__
 
-مسئول:
-
-- Ledger
-- Accounting Entries
-- Financial Reports
-- Receivable
-- Payable
-
-__Module 2: Inventory & Warehouse__
-
-مسئول:
-
-- Warehouse
-- Stock
-- Movement
-- Inventory Control
-
-__Module 3: Sales & CRM__
-
-مسئول:
-
-- Customer Management
-- Opportunity
-- Sales Process
-- Orders
-
-__Module 4: Purchase__
-
-مسئول:
-
-- Supplier
-- Purchase Request
-- Purchase Order
-
-__Module 5: Human Resource__
-
-مسئول:
-
-- Employee
-- Attendance
-- Payroll
-- HR Process
-
-__Module 6: Manufacturing__
-
-مسئول:
-
-- Production
-- Bill Of Material
-- Work Order
-
-__Module 7: Project Management__
-
-مسئول:
-
-- Project
-- Task
-- Resource Planning
+Event bus پیشرفته، BI، AI، Mobile، Data Warehouse — آینده.
 
 __4. زیرساخت‌های Cross Cutting__
 
-این بخش‌ها متعلق به یک ماژول خاص نیستند و توسط کل سیستم استفاده می‌شوند:
-
-__Event Architecture__
-
-وضعیت اولیه:
-
-Backend Internal Event Bus
-
-هدف آینده:
-
-امکان مهاجرت به:
-
-- RabbitMQ
-- Kafka
-- Cloud Event Platform
-
-__API Gateway Layer__
-
-مسئول:
-
-- Authentication
-- Routing
-- Rate Limiting
-- Security
-
-__Cache Layer__
-
-استفاده برای:
-
-- Permission Cache
-- Session Data
-- Frequently Used Data
-
-__Reporting Layer__
-
-در آینده:
-
-- Reports
-- Analytics
-- BI
+- Event Architecture (شروع: Internal / Outbox)
+- API Gateway / versioned APIs
+- Cache Layer (tenant-aware)
+- Reporting Layer (آینده)
 
 __5. ترتیب اجرای پروژه__
 
-__Phase 0__
+__Phase 0__ Infrastructure & Architecture Setup
 
-Infrastructure & Architecture Setup
+__Phase 1__ SaaS Core: Layer 1–4 (Platform Business، Admin، Partner در حد نیاز، Identity)
 
-شامل:
+__Phase 2__ ERP Foundation: Layer 5
 
-- Repository
-- Environment
-- Docker
-- CI/CD
-- Base Project
+__Phase 3__ ERP Business Modules: Layer 6
 
-__Phase 1__
-
-SaaS Core Platform
-
-شامل:
-
-- Tenant
-- Identity
-- Authorization
-- Subscription
-- Billing
-- Notification
-
-__Phase 2__
-
-ERP Foundation
-
-شامل:
-
-- Organization
-- Master Data
-- Workflow
-- Document Management
-
-__Phase 3__
-
-ERP Business Modules
-
-بر اساس اولویت:
-
-1. Accounting
-2. Inventory
-3. Sales
-4. Purchase
-5. HR
-6. Manufacturing
-7. Project
-
-__Phase 4__
-
-Enterprise Features
-
-شامل:
-
-- Advanced Event Bus
-- BI
-- AI
-- Mobile Application
-- Data Warehouse
+__Phase 4__ Enterprise / Extensions: Layer 7
 
 __6. قوانین تغییر این نقشه__
 
-هیچ ماژول جدیدی بدون بررسی موارد زیر اضافه نمی‌شود:
+هیچ ماژول جدیدی بدون بررسی هدف، مرز مسئولیت، مالکیت داده، وابستگی، Tenant Isolation و API Architecture اضافه نمی‌شود.
 
-- هدف ماژول
-- مرز مسئولیت
-- مالکیت داده
-- وابستگی‌ها
-- تاثیر روی Tenant Isolation
-- تاثیر روی API Architecture
-
-این سند مرجع اصلی تصمیم‌گیری برای توسعه ماژول‌های ERP SaaS خواهد بود.
-
+تغییر شماره لایه فقط از طریق Amendment روی `ADD_Layer_Module_Code_Mapping_v1.0.md` مجاز است.

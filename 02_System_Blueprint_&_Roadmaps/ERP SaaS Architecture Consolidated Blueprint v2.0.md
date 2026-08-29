@@ -1,16 +1,16 @@
 # ERP SaaS Architecture Consolidated Blueprint v2.0
 
-- **Version:** 1.0
-- **Last Updated:** 2026-08-18
+- **Version:** 2.1
+- **Last Updated:** 2026-08-29
 - **Category:** System Blueprint & Roadmaps
-- **Status:** Draft / Approved
+- **Status:** Approved (layer model aligned with ADD_Layer_Module_Code_Mapping_v1.0)
 - **Source:** HamarehERP Architecture Documentation
 
 ---
 
 __ERP SaaS Architecture Consolidated Blueprint__
 
-__Version 2.0__
+__Version 2.1__
 
 __Status:__ Architectural Decision Document (ADD)  
 __State:__ Consolidated Architecture Reference  
@@ -22,447 +22,201 @@ __1. Purpose__
 
 هدف این سند:
 
-- حذف تناقض بین اسناد معماری 
-- تعیین ساختار نهایی لایه‌ها 
-- مشخص کردن مرز Platform، Core و Business Modules 
-- تعیین مالکیت داده‌ها 
-- تعیین اصول ارتباط بین ماژول‌ها 
-- ایجاد پایه رسمی برای طراحی Database، Backend، API و Frontend 
+- حذف تناقض بین اسناد معماری
+- تعیین ساختار نهایی لایه‌ها
+- مشخص کردن مرز Platform، Admin، Identity، Foundation و Business Modules
+- تعیین مالکیت داده‌ها
+- تعیین اصول ارتباط بین ماژول‌ها
+- ایجاد پایه رسمی برای طراحی Database، Backend، API و Frontend
 
-این سند جایگزین تصمیمات پراکنده در اسناد:
+**شماره‌گذاری لایه‌ها و نگاشت به ماژول کد:**  
+Single Source of Truth =  
+`02_System_Blueprint_&_Roadmaps/ADD_Layer_Module_Code_Mapping_v1.0.md`
 
-- System Architecture Blueprint 
-- Module Architecture Map 
-- Module Boundary Definition 
-- Module Dependency Map 
-
-می‌شود.
+شماره‌گذاری قدیمی این Blueprint (Identity به‌عنوان Layer 2 و …) از تاریخ 2026-08-29 **منسوخ** است.
 
 __2. Final Architecture Model__
 
-معماری نهایی سیستم از پنج لایه اصلی تشکیل می‌شود:
-
-Layer 1
-
-SaaS Platform Layer
-
+```
+Layer 1  SaaS Platform Business     → code: SaasPlatform
         ↓
-
-Layer 2
-
-Identity & Security Core
-
+Layer 2  SaaS Admin                 → code: SaasAdmin
         ↓
-
-Layer 3
-
-ERP Foundation Layer
-
+Layer 3  Partner & Affiliate
         ↓
-
-Layer 4
-
-ERP Business Bounded Contexts
-
+Layer 4  Identity & Access Core     → code: IdentityCore
         ↓
+Layer 5  ERP Foundation             → Organization, MasterData, DocumentManagement, Workflow
+        ↓
+Layer 6  ERP Business Modules       → vertical bounded contexts
+        ↓
+Layer 7  Extensions & Integrations  → future
+```
 
-Layer 5
+__3. Layer 1 - SaaS Platform Business__
 
-Extensions & Integrations
+مسئولیت: مدیریت تجاری خود پلتفرم SaaS.
 
-__3. Layer 1 - SaaS Platform Layer__
-
-مسئولیت:
-
-مدیریت خود پلتفرم SaaS.
+کد: `App\Modules\SaasPlatform`
 
 شامل:
 
 __Tenant Management__
 
-مالک:
-
-- Tenant 
-- Tenant Profile 
-- Tenant Domain 
-- Tenant Status 
-
-وظایف:
-
-- ایجاد Tenant 
-- مدیریت وضعیت سرویس 
-- مدیریت قرارداد SaaS 
+- Tenant، Tenant Domain، Tenant Status، Tenant Settings
 
 __Subscription & Billing__
 
-مالک:
+- Plan، Plan Version، Features، Addons، Subscription، Platform Invoice، Transaction، Wallet، Coupon
 
-- Plan 
-- Subscription 
-- Invoice 
-- Payment State 
+توجه: «SaaS Business» در نام پوشه Database فقط **alias** است؛ نام رسمی لایه = **SaaS Platform Business**.
 
-وظایف:
+__4. Layer 2 - SaaS Admin__
 
-- مدیریت پلن‌ها 
-- کنترل Feature 
-- Billing 
+مسئولیت: مدیریت داخلی پلتفرم توسط تیم مالک سیستم (جدا از Identity کاربران Tenant).
 
-__Platform Administration__
+کد: `App\Modules\SaasAdmin`
 
 مالک:
 
-- Platform Admin 
-- System Configuration 
-- Audit Platform 
+- Admin User / Role / Permission
+- Platform Audit
+- System Configuration
+- Notification (پلتفرم)
+- Support & Ticketing
 
-__4. Layer 2 - Identity & Security Core__
+__5. Layer 3 - Partner & Affiliate__
 
-این لایه هسته امنیت کل سیستم است.
+مسئولیت: شبکه همکاران، کمیسیون و تسویه.
+
+جداول و دامنه طبق Database Layer 3.
+
+__6. Layer 4 - Identity & Access Core__
+
+هسته امنیت و کنترل دسترسی کل سیستم برای کاربران Tenant.
+
+کد: `App\Modules\IdentityCore`
 
 مالک:
 
-- User 
-- Credential 
-- Profile 
-- Role 
-- Permission 
-- Scope 
-- Membership 
+- User، Credential، Profile
+- Tenant Membership (tenant_users)
+- Role، Permission، Scope و اتصالات آن‌ها
 
 قوانین:
 
-هیچ Module اجازه ایجاد Identity مستقل ندارد.
+- هیچ Module اجازه ایجاد Identity مستقل ندارد (Core Only Once).
+- مدل دسترسی: User → Role → Permission → Scope → Resource
+- **Organization داخل این لایه نیست.**
 
-مدل دسترسی:
+__7. Layer 5 - ERP Foundation__
 
-User
+سرویس‌های مشترک ERP (نه عمودی کسب‌وکار).
 
- ↓
+__Organization Management__ — کد: `Organization`
 
-Role
+- Company، Branch، Department
 
- ↓
+__Master Data Management__ — کد: `MasterData`
 
-Permission
+- Currency، Unit، Country، Tax Definition، Categories/Values، و سایر داده‌های پایه مشترک
 
- ↓
+داده تخصصی هر ماژول عمودی در مالکیت همان ماژول Layer 6 می‌ماند.
 
-Scope
+__Document Management__ — کد: `DocumentManagement`
 
- ↓
+__Workflow Engine__ — آینده؛ همه ماژول‌ها فقط مصرف‌کننده هستند.
 
-Resource
+__8. Layer 6 - ERP Business Bounded Contexts__
 
-__5. Layer 3 - ERP Foundation Layer__
+هر ماژول مالک داده و منطق خود است.
 
-این لایه سرویس‌های مشترک ERP است.
+- Accounting
+- Inventory
+- Sales / Purchase (Procurement & Sales)
+- Manufacturing
+- HR
+- Project Management
 
-شامل:
+__9. Layer 7 - Extensions & Integrations__
 
-__Organization Management__
+آینده: BI، Mobile، Data Warehouse، ادغام‌های خارجی.
 
-مالک:
+__10. Database Architecture__
 
-- Company 
-- Branch 
-- Department 
+| Logical database | Layers |
+|------------------|--------|
+| hamareh_saas_core | 1, 2, 3, 4 |
+| hamareh_erp_tenants | 5, 6 |
 
-__Master Data Management__
-
-Master Data فقط شامل داده‌های عمومی و مشترک است.
-
-مالک:
-
-- Currency 
-- Unit 
-- Country 
-- Language 
-- Tax Definition 
-
-داده‌های تخصصی هر ماژول در مالکیت همان ماژول باقی می‌ماند.
-
-مثال:
-
-Product:
-
-مالک Inventory
-
-Customer:
-
-مالک Sales / CRM
-
-Supplier:
-
-مالک Purchase
-
-__Workflow Engine__
-
-مالک:
-
-- Workflow Definition 
-- Workflow Instance 
-- Approval 
-
-تمام Moduleها فقط مصرف‌کننده Workflow هستند.
-
-__Document Management__
-
-مالک:
-
-- Document 
-- Attachment 
-- Metadata 
-
-تمام Moduleها از طریق API استفاده می‌کنند.
-
-__6. Layer 4 - ERP Business Bounded Contexts__
-
-هر ماژول:
-
-- مالک داده خود است. 
-- دیتابیس منطقی مستقل دارد. 
-- Business Logic خود را نگهداری می‌کند. 
-
-ماژول‌ها:
-
-__Accounting__
-
-مالک:
-
-تمام Entityهای مالی
-
-__Inventory__
-
-مالک:
-
-تمام Entityهای انبار
-
-__Sales__
-
-مالک:
-
-تمام Entityهای فروش
-
-__Purchase__
-
-مالک:
-
-تمام Entityهای خرید
-
-__Manufacturing__
-
-مالک:
-
-تمام Entityهای تولید
-
-__HR__
-
-مالک:
-
-تمام Entityهای منابع انسانی
-
-__Project Management__
-
-مالک:
-
-تمام Entityهای پروژه
-
-__7. Database Architecture__
-
-معماری دیتابیس:
-
-Database 1
-
-hamareh_saas_core
-
-مالک:
-
-Layer 1
-
-Layer 2
-
---------------------------------
-
-Database 2
-
-hamareh_erp_tenants
-
-مالک:
-
-Layer 3
-
-Layer 4
-
-__8. Database Ownership Rules__
+__11. Database Ownership Rules__
 
 هر جدول فقط یک مالک دارد.
 
-قوانین:
+مجاز: FK فیزیکی فقط داخل یک Bounded Context.
 
-مجاز:
+غیرمجاز: FK فیزیکی بین ماژول‌های مستقل.
 
-Invoice
+ارتباط بین ماژول‌ها: UUID Reference، API، Domain/Integration Event.
 
-|
+__12. Module Communication Rules__
 
-Invoice Items
+Synchronous (Query): API / Service Contract (in-process در Modular Monolith).
 
-چون داخل یک Bounded Context هستند.
+Asynchronous (state change): Domain Event / Integration Event.
 
-غیرمجاز:
+__13. Event Architecture__
 
-Sales Table
+هر Event یک Publisher و Version دارد و Command نیست.
 
-FK
+صحیح: `InvoiceCreated.v1` — غلط: `CreateInvoice`
 
-Inventory Table
+__14. Backend Architecture__
 
-ارتباط فقط:
+فاز اول: Modular Monolith + DDD + Clean Architecture.
 
-- UUID Reference 
-- API 
-- Event 
+ساختار استاندارد ماژول: Domain، Application، Infrastructure، API.
 
-__9. Module Communication Rules__
+__15. Frontend Architecture__
 
-ارتباط مجاز:
+Next.js — Core Shell + Independent Module Apps.
 
-__Synchronous__
+__16. Tenant Isolation Rules__
 
-برای Query:
+داده‌های عملیاتی: `tenant_id` اجباری.
 
-- API 
-- Service Contract 
-
-__Asynchronous__
-
-برای تغییر وضعیت:
-
-- Domain Event 
-- Integration Event 
-
-__10. Event Architecture__
-
-هر Event:
-
-- یک Publisher دارد. 
-- Version دارد. 
-- نباید Command باشد. 
-
-مثال:
-
-صحیح:
-
-InvoiceCreated.v1
-
-غلط:
-
-CreateInvoice
-
-__11. Backend Architecture__
-
-فاز اول:
-
-Modular Monolith
-
-\+
-
-DDD
-
-\+
-
-Clean Architecture
-
-ساختار هر Module:
-
-Domain
-
-Application
-
-Infrastructure
-
-API
-
-Events
-
-Repository
-
-Authorization
-
-Validation
-
-__12. Frontend Architecture__
-
-Frontend:
-
-Next.js
-
-ساختار:
-
-Core Shell
-
-\+
-
-Independent Module Apps
-
-هر Module مالک UI خود است.
-
-__13. Tenant Isolation Rules__
-
-تمام داده‌های عملیاتی:
-
-اجباری:
-
-tenant_id
-
-امنیت:
-
-- Application Filter 
-- PostgreSQL RLS 
+امنیت: Application Filter + PostgreSQL RLS.
 
 هیچ Query بدون Tenant Context مجاز نیست.
 
-__14. Architecture Decision Rules__
+__17. Architecture Decision Rules__
 
-قبل از ایجاد:
+قبل از ایجاد Table / API / Module / Feature مشخص شود:
 
-- Table 
-- API 
-- Module 
-- Feature 
+1. مالک چیست؟
+2. شماره و نام لایه (طبق ADD Mapping) چیست؟
+3. ماژول کد چیست؟
+4. Dependency و Event چیست؟
+5. اثر روی Tenant Isolation چیست؟
 
-باید مشخص شود:
+__18. Final Architecture Statement__
 
-1. مالک چیست؟ 
-2. محل قرارگیری چیست؟ 
-3. Dependency چیست؟ 
-4. Event چیست؟ 
-5. اثر روی Tenant Isolation چیست؟ 
-
-__15. Final Architecture Statement__
-
-معماری نهایی HamarehERP:
-
-SaaS Platform
-
+```
+SaaS Platform Business (L1)
         ↓
-
-Identity Core
-
+SaaS Admin (L2)
         ↓
-
-ERP Foundation
-
+Partner (L3)
         ↓
-
-Business Modules
-
+Identity & Access Core (L4)
         ↓
+ERP Foundation (L5)
+        ↓
+ERP Business Modules (L6)
+        ↓
+Extensions (L7)
+```
 
-Extensions
+این سند همراه با `ADD_Layer_Module_Code_Mapping_v1.0.md` مرجع اصلی تصمیمات معماری است.
 
-این سند مرجع اصلی تمام تصمیمات معماری، دیتابیس، Backend، API و Frontend خواهد بود.
-
-هر تغییری در این ساختار نیازمند ثبت Architecture Amendment است.
-
+هر تغییر در ساختار لایه‌ها نیازمند Architecture Amendment است.

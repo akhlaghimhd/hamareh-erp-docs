@@ -1,6 +1,6 @@
 # ADD: Layer Numbering & Code Module Mapping v1.0
 
-- **Version:** 1.0
+- **Version:** 1.1
 - **Last Updated:** 2026-08-29
 - **Category:** System Blueprint & Roadmaps
 - **Status:** Locked (Architectural Decision Document)
@@ -65,31 +65,29 @@ Layer 7  Extensions & Integrations (future)
 
 | Legacy phrase | Status | Replacement |
 |---------------|--------|-------------|
-| «SaaS Business» as product layer name | **Alias only** (DB folder name) | **Layer 1 – SaaS Platform Business** / code `SaasPlatform` |
-| Blueprint v2.0 old: Identity = Layer 2 | **Superseded 2026-08-29** | Identity = **Layer 4** |
+| «SaaS Business» / folder `Layer_1_SaaS_Business` | **Retired 2026-08-29** | `Layer_1_SaaS_Platform_Business` + official name SaaS Platform Business |
+| Blueprint v2.0 old: Identity = Layer 2 | **Superseded** | Identity = **Layer 4** |
 | Blueprint v2.0 old: ERP Foundation = Layer 3 | **Superseded** | Foundation = **Layer 5** |
 | Blueprint v2.0 old: Business modules = Layer 4 | **Superseded** | Business = **Layer 6** |
-| File title implying «Identity Organization Layer» as one layer | **Superseded** | Identity = L4; Organization = L5 |
+| File «ERP Core Identity Organization Layer» | **Retired 2026-08-29** | `Database Layer 4 - Identity & Access Core.md` |
 
 ---
 
-## 4. Documentation Folder Alignment
+## 4. Documentation Folder Alignment (current)
 
 | Docs path | Official layer |
 |-----------|----------------|
-| `04_SaaS_Core_Platform_Layers/Layer_1_SaaS_Business/` | Layer 1 (folder name is legacy alias) |
+| `04_SaaS_Core_Platform_Layers/Layer_1_SaaS_Platform_Business/` | Layer 1 |
 | `04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/` | Layer 2 |
 | `04_SaaS_Core_Platform_Layers/Layer_3_Partner_Affiliate/` | Layer 3 |
-| `05_Identity_&_Master_Data_Layer/Layer_4_Identity_Core/` | Layer 4 only (Identity); Organization designs live under Layer 5 conceptually |
-| `05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/` | Layer 5 (Master Data part) |
+| `05_Identity_&_Master_Data_Layer/Layer_4_Identity_Core/` | Layer 4 (Identity only) |
+| `05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/` | Layer 5 (Master Data) |
 | `06_Vertical_ERP_Modules/` | Layer 6 |
 
-**Recommended rename (optional, non-blocking):**
+Canonical DB filenames:
 
-- Folder `Layer_1_SaaS_Business` → `Layer_1_SaaS_Platform_Business`
-- File `Database Layer 4 - ERP Core Identity Organization Layer.md` → `Database Layer 4 - Identity & Access Core.md`
-
-Renames do not change SSOT; this ADD already overrides ambiguous titles.
+- Layer 1: `Database Layer 1 - SaaS Platform Business Layer.md`
+- Layer 4: `Database Layer 4 - Identity & Access Core.md`
 
 ---
 
@@ -125,4 +123,4 @@ Layer 6  ERP Business Modules       → vertical modules
 Layer 7  Extensions & Integrations  → future
 ```
 
-**Status: Locked — 2026-08-29**
+**Status: Locked — 2026-08-29 (v1.1 paths applied)**

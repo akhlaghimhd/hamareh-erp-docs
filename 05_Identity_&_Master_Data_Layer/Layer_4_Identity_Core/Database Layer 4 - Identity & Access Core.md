@@ -1,6 +1,6 @@
 # Database Layer 4 - Identity & Access Core
 
-- **Version:** 1.2
+- **Version:** 1.3
 - **Last Updated:** 2026-08-31
 - **Category:** Identity & Master Data Layer
 - **Status:** Approved
@@ -14,9 +14,9 @@
 
 ---
 
-## Decision Log – P4-0.1 (2026-08-31)
+## Decision Log – Phase 0 (Layer 4)
 
-**Official Decision – Source of Truth for RBAC & Scope tables**
+### P4-0.1 (2026-08-31) – Source of Truth for RBAC & Scope tables
 
 In the initial version of this document, RBAC and Scope tables were designed with unprefixed names (`roles`, `permissions`, `role_permissions`, `user_roles`, `scopes`, `user_scope_assignments`).
 
@@ -36,7 +36,35 @@ During actual implementation, due to strict Multi-Tenancy requirements (TenantCo
 3. From this moment forward, all development, migrations, tests, seeders, and documentation must be based exclusively on the `tenant_*` tables.
 4. Unprefixed names are no longer valid. No new tables must be created based on them.
 
-This decision aligns the documentation with the running code, prevents dual-table risk, and keeps the architecture consistent with the project’s Multi-Tenancy rules.
+### P4-0.2 (2026-08-31) – Official Scope naming mapping
+
+| Concept in early SSOT | Official name in code & DB (SoT) |
+|-----------------------|----------------------------------|
+| scopes                | `tenant_scopes`                  |
+| user_scope_assignments| `tenant_user_scopes`             |
+| Model                 | `TenantScope` / `TenantUserScope`|
+| Service               | `ScopeService`                   |
+
+All future references, migrations, tests and documentation must use the `tenant_*` names only.
+
+### P4-0.3 (2026-08-31) – Ownership boundary
+
+- **IdentityCore (Layer 4)** owns: users, credentials, profiles, tenant_users, RBAC (`tenant_roles` / `tenant_permissions` / …), Scopes (`tenant_scopes` / `tenant_user_scopes`), membership history.
+- **Organization (Layer 5)** owns: Company, Branch, Department and related structural entities.
+- No ownership transfer. Cross-module references remain logical only (no physical FK between modules).
+
+### P4-0.4 (2026-08-31) – Minimum required CRUD surface
+
+| Entity              | Required operations                                      |
+|---------------------|----------------------------------------------------------|
+| User / TenantUser   | list, show, create, update, soft-delete (+ row_version) |
+| Role                | list, show, create, update, soft-delete, assign to user, assign permissions |
+| Permission          | list, show, create, update, soft-delete                 |
+| Scope               | list, show, create, update, soft-delete, assign / unassign to user |
+| UserProfile         | show, create/update (upsert), soft-delete               |
+| MembershipHistory   | append + read (no hard delete)                          |
+
+All operations must respect Soft Delete, `row_version`, tenant isolation and permission middleware.
 
 ---
 

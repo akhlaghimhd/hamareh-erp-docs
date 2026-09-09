@@ -1,7 +1,7 @@
 # ADD: Layer Numbering & Code Module Mapping v1.0
 
-- **Version:** 1.1
-- **Last Updated:** 2026-08-29
+- **Version:** 1.2
+- **Last Updated:** 2026-09-09
 - **Category:** System Blueprint & Roadmaps
 - **Status:** Locked (Architectural Decision Document)
 - **Project:** HamarehERP SaaS Platform
@@ -42,7 +42,7 @@ Layer 7  Extensions & Integrations (future)
 |-------|---------------|----------------|----------------|
 | **1** | SaaS Platform Business | `App\Modules\SaasPlatform` | Tenant, plans, subscription, platform billing, wallet, coupons |
 | **2** | SaaS Admin | `App\Modules\SaasAdmin` | Platform admin IAM, audit, system settings, notifications, support |
-| **3** | Partner & Affiliate | *(module TBD; migrations under partner_layer)* | Partner network, commissions, payouts |
+| **3** | Partner & Affiliate | `App\Modules\PartnerLayer` (migrations under `database/migrations/partner_layer`) | Partner network, commissions, payouts |
 | **4** | Identity & Access Core | `App\Modules\IdentityCore` | User, credential, profile, tenant membership, role, permission, scope |
 | **5** | ERP Foundation | `Organization`, `MasterData`, `DocumentManagement`, Workflow (future) | Org structure, shared master data, documents, workflow engine |
 | **6** | ERP Business Modules | `Accounting`, `ProcurementSales`, `Manufacturing`, `HrManagement`, `ProjectManagement`, Inventory (future) | Vertical bounded contexts |
@@ -116,11 +116,11 @@ Canonical DB filenames:
 ```
 Layer 1  SaaS Platform Business     → SaasPlatform
 Layer 2  SaaS Admin                 → SaasAdmin
-Layer 3  Partner & Affiliate
+Layer 3  Partner & Affiliate        → PartnerLayer
 Layer 4  Identity & Access Core     → IdentityCore
 Layer 5  ERP Foundation             → Organization + MasterData + DocumentManagement + Workflow
 Layer 6  ERP Business Modules       → vertical modules
 Layer 7  Extensions & Integrations  → future
 ```
 
-**Status: Locked — 2026-08-29 (v1.1 paths applied)**
+**Status: Locked — 2026-09-09 (v1.2 — Layer 3 module path finalized)**

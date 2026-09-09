@@ -1,9 +1,9 @@
 # Database Layer 3 - Partner Layer
 
-- **Version:** 1.0
-- **Last Updated:** 2026-08-18
+- **Version:** 1.1
+- **Last Updated:** 2026-09-09
 - **Category:** SaaS Core Platform Layers
-- **Status:** Draft / Approved
+- **Status:** Approved
 - **Source:** HamarehERP Architecture Documentation
 
 ---
@@ -146,7 +146,9 @@ CREATE UNIQUE INDEX uq_partner_users
 
     ON partner_users(partner_id, user_id) 
 
-    WHERE deleted_at IS NULL;-- 3. partner_tenant_assignments
+    WHERE deleted_at IS NULL;
+
+-- 3. partner_tenant_assignments
 
 CREATE TABLE partner_tenant_assignments (
 
@@ -369,7 +371,7 @@ CREATE INDEX idx_partner_payouts_partner ON partner_payouts(partner_id) WHERE de
 -- ============================================================================
 
 -- 1. partner_contacts (مدیریت مخاطبان و پرسنل کلیدی شرکای تجاری)
-
+-- SoftDeletes + full audit added 2026-09-09 (L3 SoftDeletes closure)
 -- ============================================================================
 
 CREATE TABLE partner_contacts (
@@ -392,18 +394,26 @@ CREATE TABLE partner_contacts (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
+    created_by UUID,
+
     updated_at TIMESTAMPTZ,
+
+    updated_by UUID,
+
+    deleted_at TIMESTAMPTZ,
+
+    deleted_by UUID,
 
     row_version BIGINT NOT NULL DEFAULT 1
 
 );
 
-CREATE INDEX idx_partner_contacts_parent ON partner_contacts(partner_id);
+CREATE INDEX idx_partner_contacts_parent ON partner_contacts(partner_id) WHERE deleted_at IS NULL;
 
 -- ============================================================================
 
 -- 2. partner_documents (مدارک، مجوزها و اسناد احراز هویت پارتنرها)
-
+-- SoftDeletes + full audit added 2026-09-09 (L3 SoftDeletes closure)
 -- ============================================================================
 
 CREATE TABLE partner_documents (
@@ -426,18 +436,26 @@ CREATE TABLE partner_documents (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
+    created_by UUID,
+
     updated_at TIMESTAMPTZ,
+
+    updated_by UUID,
+
+    deleted_at TIMESTAMPTZ,
+
+    deleted_by UUID,
 
     row_version BIGINT NOT NULL DEFAULT 1
 
 );
 
-CREATE INDEX idx_partner_docs_parent ON partner_documents(partner_id);
+CREATE INDEX idx_partner_docs_parent ON partner_documents(partner_id) WHERE deleted_at IS NULL;
 
 -- ============================================================================
 
 -- 3. partner_bank_accounts (حساب‌های بانکی پارتنرها جهت تسویه‌حساب)
-
+-- SoftDeletes + full audit added 2026-09-09 (L3 SoftDeletes closure)
 -- ============================================================================
 
 CREATE TABLE partner_bank_accounts (
@@ -458,18 +476,26 @@ CREATE TABLE partner_bank_accounts (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
+    created_by UUID,
+
     updated_at TIMESTAMPTZ,
+
+    updated_by UUID,
+
+    deleted_at TIMESTAMPTZ,
+
+    deleted_by UUID,
 
     row_version BIGINT NOT NULL DEFAULT 1
 
 );
 
-CREATE UNIQUE INDEX uq_partner_bank_shaba ON partner_bank_accounts(shaba_number) WHERE is_active = TRUE;
+CREATE UNIQUE INDEX uq_partner_bank_shaba ON partner_bank_accounts(shaba_number) WHERE is_active = TRUE AND deleted_at IS NULL;
 
 -- ============================================================================
 
 -- 4. partner_activity_logs (ردیابی و لاگ فعالیت‌های انجام‌شده در پورتال پارتنر)
-
+-- Intentionally APPEND-ONLY (no SoftDeletes) — audit trail must never be deleted.
 -- ============================================================================
 
 CREATE TABLE partner_activity_logs (
@@ -523,4 +549,3 @@ ALTER TABLE partner_payouts
 ADD COLUMN currency_id UUID NOT NULL,
 
 ADD COLUMN bank_account_id UUID; -- ارجاع منطقی به حساب بانکی متصل پارتنر
-

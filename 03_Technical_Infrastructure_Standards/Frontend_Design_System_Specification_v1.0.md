@@ -1,6 +1,6 @@
 # Frontend Design System Specification v1.0
 
-- **Version:** 1.0
+- **Version:** 1.1
 - **Date:** 2026-09-10
 - **Status:** Locked / Non-Negotiable (Structure)
 - **Category:** Technical Infrastructure Standards – Frontend
@@ -27,7 +27,22 @@
 
 ---
 
-## 2. Official Repositories & Tools (Reminder)
+## 2. Language & Direction (Non-Negotiable)
+
+| موضوع | تصمیم قطعی |
+|------|------------|
+| **زبان اصلی رابط کاربری** | فارسی |
+| **جهت اصلی** | راست‌به‌چپ (RTL) |
+| **فونت اصلی** | Vazirmatn |
+| **زبان‌های بعدی** | عربی و انگلیسی در فازهای بعدی (در صورت نیاز) |
+| **برچسب‌ها و نمونه‌متن‌ها در Figma** | باید فارسی باشند |
+| **کد Frontend** | `lang="fa"` و `dir="rtl"` |
+
+تمام کامپوننت‌ها، الگوها، پیام‌ها و مستندات بصری Design System باید بر اساس فارسی و RTL طراحی و پیاده‌سازی شوند.
+
+---
+
+## 3. Official Repositories & Tools
 
 | نوع | آدرس / ابزار |
 |-----|-------------|
@@ -38,220 +53,211 @@
 
 ---
 
-## 3. Design System Structure (Complete Inventory)
+## 4. Design System Structure (Complete Inventory)
 
-### 3.1 Foundations
-- Color System (Primary, Secondary, Success, Warning, Danger, Info + full scale 50–950 + Dark Mode)
-- Typography (Vazirmatn – Heading 1–6, Body, Small, Caption, Label, Overline)
-- Spacing (8-point scale + semantic tokens)
-- Border Radius (none, sm, md, lg, xl, full)
-- Elevation / Shadow (sm, md, lg, xl)
-- Border tokens
-- Iconography sizes (16, 20, 24) – Outline / Solid
-- Motion tokens (duration & easing)
-- Breakpoints (Mobile, Tablet, Desktop)
+### 4.1 Foundations
+- سیستم رنگ (Primary, Secondary, Success, Warning, Danger, Info + مقیاس کامل + حالت تاریک)
+- تایپوگرافی (Vazirmatn – عنوان ۱ تا ۶، متن اصلی، کوچک، Caption، Label)
+- فاصله‌گذاری (مقیاس ۸ نقطه‌ای + توکن‌های معنایی)
+- شعاع گوشه
+- سایه / Elevation
+- آیکون‌ها
+- توکن‌های حرکت
+- Breakpointها
 
-### 3.2 Base Components
-- Button (Primary, Secondary, Outline, Ghost, Destructive) + sizes + Loading/Disabled
-- Icon Button
-- Input (Text, Password, Number, Search) + Label + Helper + Error + Prefix/Suffix
-- Textarea
-- Select / Combobox
-- Checkbox
-- Radio Group
-- Switch
-- Badge / Tag / Status Pill
-- Avatar (image + initials fallback)
+### 4.2 Base Components
+- دکمه (اصلی، ثانویه، Outline، Ghost، مخرب) + اندازه‌ها + حالت‌ها
+- دکمه آیکونی
+- فیلد ورودی + برچسب + راهنما + خطا
+- ناحیه متن
+- انتخاب‌گر / Combobox
+- چک‌باکس و رادیو
+- سوئیچ
+- نشان / برچسب وضعیت
+- آواتار
 - Tooltip
 - Divider
 - Skeleton
 
-### 3.3 Form Patterns
-- Form Field (Label + Control + Helper + Error)
-- Form Layout (single-column & two-column)
-- Form Section / Fieldset
-- Inline Validation State
-- Required Indicator
-- Form Actions (Save / Cancel)
+### 4.3 Form Patterns
+- فیلد فرم کامل
+- چیدمان فرم (تک‌ستونه و دوستونه)
+- بخش فرم
+- اعتبارسنجی درون‌خطی
+- نشانگر اجباری بودن
+- دکمه‌های اقدام فرم (ذخیره / انصراف)
 
-### 3.4 Data Display
-- Table (Header, Row, Cell, Sortable, Sticky, Empty, Loading, Row Actions)
-- Pagination
-- Data List
-- Description List
-- Key-Value Pair
-- Status Indicator
-- Empty State (generic)
+### 4.4 Data Display
+- جدول (کامل با هدر، ردیف، مرتب‌سازی، حالت خالی و بارگذاری)
+- صفحه‌بندی
+- لیست داده
+- لیست توضیحات
+- جفت کلید-مقدار
+- نشانگر وضعیت
+- حالت خالی عمومی
 
-### 3.5 Feedback & Messaging
-- Alert (Success, Warning, Error, Info)
-- Toast / Notification
-- Banner
-- Inline Message
-- Progress / Spinner
-- Confirmation Dialog
+### 4.5 Feedback & Messaging
+- هشدار (موفقیت، هشدار، خطا، اطلاعات)
+- Toast / اعلان
+- بنر
+- پیام درون‌خطی
+- نوار پیشرفت / اسپینر
+- دیالوگ تأیید
 
-### 3.6 Navigation & Layout
-- Sidebar (expanded / collapsed)
-- Top Header / App Bar
-- Breadcrumb
-- Tabs
-- Vertical Navigation Item
-- Page Header (title + page actions)
-- Content Layout (with Sidebar)
+### 4.6 Navigation & Layout
+- نوار کناری (باز و جمع‌شده)
+- هدر بالا
+- مسیر صفحه (Breadcrumb)
+- تب‌ها
+- آیتم ناوبری عمودی
+- هدر صفحه
+- چیدمان محتوا
 
-### 3.7 Overlays
-- Modal / Dialog (sm, md, lg)
-- Drawer (RTL – from right)
-- Dropdown Menu
+### 4.7 Overlays
+- مودال / دیالوگ
+- Drawer (از سمت راست – RTL)
+- منوی کشویی
 - Popover
-- Command Palette (optional in later phase)
 
-### 3.8 ERP-Specific Patterns
-- Document Status Badge (Draft, Pending, Approved, Rejected, Posted)
-- Amount / Currency Display
-- Date & DateTime Display
-- User Chip
-- Permission Gate (disabled state for unauthorized actions)
-- Worklist Item
-- Filter Bar
-- Bulk Actions Bar
+### 4.8 ERP-Specific Patterns
+- نشان وضعیت سند
+- نمایش مبلغ و ارز
+- نمایش تاریخ و زمان
+- تراشه کاربر
+- محدودیت دسترسی
+- آیتم کارتابل
+- نوار فیلتر
+- نوار اقدامات گروهی
 
-### 3.9 Common States
-- Default, Hover, Focus, Active/Selected, Disabled, Loading, Error, Empty
+### 4.9 Common States
+- پیش‌فرض، هاور، فوکوس، انتخاب‌شده، غیرفعال، بارگذاری، خطا، خالی
 
-### 3.10 Branding & Multi-Tenant Identity
-- Platform Branding (Hamareh logo, name, colors)
-- Tenant Branding (customer logo, organization name, optional brand color)
-- Logo Variants (full, collapsed, light/dark, favicon)
-- App Name & Tagline
-- Login / Auth Branding
-- Favicon & Browser Meta
+### 4.10 Branding & Multi-Tenant Identity
+- برندینگ پلتفرم (همراه‌)
+- برندینگ مستأجر (لوگوی مشتری)
+- انواع لوگو
+- نام و شعار محصول
+- برندینگ صفحه ورود
 
-### 3.11 User & Identity Components
-- User Avatar (image, initials, online status)
-- User Menu (profile, settings, logout)
-- User Chip / Mention
-- Role Badge
-- Permission Indicator
-- Profile Header
-- Session / Security Info
+### 4.11 User & Identity Components
+- آواتار کاربر
+- منوی کاربر
+- تراشه کاربر
+- نشان نقش
+- نشانگر دسترسی
+- هدر پروفایل
 
-### 3.12 Reporting & Analytics Patterns
-- Report Page Header
-- Filter Panel
-- KPI / Metric Card
-- Chart Container
-- Report Table (with totals & grouping)
-- Date Range Picker
-- Export Actions
-- No Data State (Report)
-- Print-friendly Layout
+### 4.12 Reporting & Analytics Patterns
+- هدر صفحه گزارش
+- پنل فیلتر
+- کارت شاخص (KPI)
+- ظرف نمودار
+- جدول گزارش
+- انتخاب بازه تاریخ
+- اقدامات خروجی
 
-### 3.13 Complementary Patterns
-- Command Palette / Global Search
-- Help & Documentation Trigger
-- Onboarding / Empty Workspace
-- Notification Center
-- Activity Timeline
-- File / Attachment Item
-- Comment Thread (future)
+### 4.13 Complementary Patterns
+- جستجوی سراسری
+- راهنما
+- حالت اولیه فضای کاری
+- مرکز اعلان‌ها
+- تایم‌لاین فعالیت
+- آیتم پیوست
 
-### 3.14 Accessibility (Non-Negotiable)
-- Focus States (consistent ring)
-- Color Contrast (WCAG AA minimum)
-- Keyboard Navigation (Tab order, Escape, Enter)
-- Screen Reader Labels (aria)
-- Reduced Motion support
-- Error Identification linked to fields
+### 4.14 Accessibility
+- حالت فوکوس یکپارچه
+- کنتراست رنگ (WCAG AA)
+- ناوبری صفحه‌کلید
+- برچسب‌های Screen Reader
+- پشتیبانی از Reduced Motion
 
-### 3.15 Density & Layout Modes
-- Comfortable Density (default)
-- Compact Density (for power users & dense tables)
-- Content Max-Width
-- Sticky Zones (table header, filter bar, action bar)
+### 4.15 Density & Layout Modes
+- تراکم راحت (پیش‌فرض)
+- تراکم فشرده
+- عرض حداکثر محتوا
+- نواحی چسبان
 
-### 3.16 Micro-interactions & Feedback
-- Button Loading State
-- Success Feedback
-- Destructive Action Flow (two-step confirmation)
-- Hover & Press States
-- Transition Tokens
+### 4.16 Micro-interactions & Feedback
+- حالت بارگذاری دکمه
+- بازخورد موفقیت
+- جریان تأیید عملیات مخرب
+- حالت‌های هاور و فشردن
 
-### 3.17 Content & Microcopy Guidelines
-- Voice & Tone (formal, clear, unambiguous)
-- Button Labels (action-oriented)
-- Empty State Copy (actionable)
-- Error Messages (problem + possible solution)
-- Confirmation Texts (standard delete/cancel/leave)
+### 4.17 Content & Microcopy Guidelines
+- لحن و صدای برند (رسمی، واضح، بدون ابهام)
+- برچسب دکمه‌ها (فعل‌محور و فارسی)
+- متن حالت خالی (اقدام‌پذیر)
+- پیام‌های خطا (مشکل + راه‌حل)
+- متن‌های تأیید
 
-### 3.18 First-time & Empty Experiences
-- First Login / Welcome
-- Empty Module State
-- Onboarding Checklist (optional)
-- No Permission State
+### 4.18 First-time & Empty Experiences
+- ورود اول / خوش‌آمدگویی
+- حالت خالی ماژول
+- چک‌لیست راه‌اندازی
+- حالت بدون دسترسی
 
-### 3.19 Global Behavior Patterns
-- Toast Stacking & Positioning
-- Unsaved Changes Guard
-- Optimistic UI Rules
-- Pagination vs Infinite Scroll (Pagination preferred for ERP)
-- Default Sorting & Filtering behavior
+### 4.19 Global Behavior Patterns
+- چیدمان و موقعیت Toast
+- هشدار تغییرات ذخیره‌نشده
+- قوانین Optimistic UI
+- صفحه‌بندی (ترجیح بر اسکرول بی‌نهایت)
+- مرتب‌سازی و فیلتر پیش‌فرض
 
-### 3.20 Documentation & Governance
-- Do’s and Don’ts per component
-- Usage Guidelines (Modal vs Drawer, etc.)
-- Component Status (Ready / Draft / Deprecated)
-- Design System Versioning
+### 4.20 Documentation & Governance
+- بایدها و نبایدها
+- راهنمای استفاده
+- وضعیت کامپوننت
+- نسخه‌بندی Design System
 
 ---
 
-## 4. Implementation Priority (Phased)
+## 5. Implementation Priority (Phased)
 
-### Phase A – Immediate (Current Focus)
-Foundations (complete) + Button + Input + Form Field + Badge + Alert + Table (base) + Modal + Page Header + basic Branding tokens
+### Phase A – فوری (تمرکز فعلی)
+Foundations کامل + دکمه + ورودی + فیلد فرم + نشان + هشدار + جدول پایه + مودال + هدر صفحه + توکن‌های برندینگ پایه
 
 ### Phase B
-Sidebar + Header + Tabs + Pagination + Empty State + Drawer + Select + Checkbox/Switch + User Menu + Avatar
+نوار کناری + هدر + تب‌ها + صفحه‌بندی + حالت خالی + Drawer + انتخاب‌گر + چک‌باکس/سوئیچ + منوی کاربر + آواتار
 
 ### Phase C
-Filter Bar, Bulk Actions, Worklist, Document Status, Reporting patterns, Density modes, advanced Accessibility documentation, Microcopy guidelines
+نوار فیلتر، اقدامات گروهی، کارتابل، وضعیت سند، الگوهای گزارش‌گیری، حالت‌های تراکم، مستندات دسترسی‌پذیری پیشرفته، راهنمای متن‌ها
 
 ---
 
-## 5. Key Locked Decisions
+## 6. Key Locked Decisions
 
 | موضوع | تصمیم |
 |------|--------|
-| Font Family | **Vazirmatn** (primary) |
-| UI Library (Code) | Shadcn/UI + Tailwind CSS |
-| Direction | RTL first |
-| Density | Comfortable default + Compact option |
-| Table Strategy | Pagination (not infinite scroll) |
-| Design Tool | Figma (Visual Single Source of Truth) |
-| Approach | Hybrid (Foundations & key components in Figma → parallel implementation) |
+| زبان اصلی | **فارسی** |
+| جهت | **RTL (راست‌به‌چپ)** |
+| فونت | **Vazirmatn** |
+| کتابخانه UI (کد) | Shadcn/UI + Tailwind CSS |
+| تراکم | راحت (پیش‌فرض) + فشرده |
+| استراتژی جدول | صفحه‌بندی |
+| ابزار طراحی | Figma |
+| رویکرد | Hybrid |
 
 ---
 
-## 6. Governance
+## 7. Governance
 
-- این سند از تاریخ ۲۰۲۶-۰۹-۱۰ از نظر **ساختار و دامنه** قفل است.
-- جزئیات بصری هر کامپوننت در Figma به‌عنوان Visual SSOT نگهداری می‌شود.
+- این سند از نظر ساختار، دامنه، زبان و جهت قفل است.
+- جزئیات بصری در Figma به‌عنوان Visual SSOT نگهداری می‌شود.
+- تمام برچسب‌ها و نمونه‌متن‌های Figma باید فارسی باشند.
 - تغییرات ساختاری نیازمند Architecture Amendment است.
-- اجرای کامپوننت‌ها باید با این فهرست و اولویت‌بندی هم‌خوان باشد.
 
 ---
 
-## 7. Current Execution Status
+## 8. Current Execution Status
 
 | بخش | وضعیت |
 |-----|--------|
-| Foundations (Colors, Typography, Spacing, Radius) | Started in Figma |
-| Phase A Components | Pending (next) |
-| Code alignment (Shadcn) | Pending |
+| Foundations | شروع‌شده در Figma (در حال اصلاح به فارسی) |
+| Phase A Components | در حال اجرا |
+| هم‌راستایی کد (Shadcn) | در انتظار |
 
 ---
 
-**End of Document**
+**پایان سند**
 
-**This specification is the Single Source of Truth for Hamareh ERP Design System scope and structure.**
+**این مشخصات، منبع واحد حقیقت برای دامنه و ساختار Design System همراه‌ ERP است.**

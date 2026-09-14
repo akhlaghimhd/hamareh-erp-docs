@@ -1,8 +1,8 @@
-# FE-P0 Foundation & Shell — Phase Closure v1.0
+# FE-P0 Foundation & Shell — Phase Closure v1.1
 
-- **Version:** 1.0
-- **Date:** 2026-09-13
-- **Status:** Closed (pending Product Owner sign-off)
+- **Version:** 1.1
+- **Date:** 2026-09-14
+- **Status:** Closed (pending Product Owner sign-off on manual scenario T17)
 - **Repos:** hamarehSaasErp-Front
 - **Related:** Frontend_Phase_Kickoff_Decision_Record_v1.0.md
 
@@ -13,43 +13,67 @@
 | معیار | وضعیت |
 |--------|--------|
 | Login با credentials واقعی Backend (password + OTP) | Done |
-| درخواست‌های محافظت‌شده با Bearer + `X-Tenant-ID` | Done (apiClient) |
+| درخواست‌های محافظت‌شده با Bearer + `X-Tenant-ID` | Done (apiClient + limited retry) |
 | `/dashboard/*` بدون Session قابل دسترسی نیست | Done (AuthGuard) |
 | کاربر لاگین‌شده از `/login` به داشبورد هدایت می‌شود | Done (GuestGuard) |
 | Shell (Header + Sidebar) نام کاربر/نقش/tenant و Logout | Done |
 | RTL + Mobile drawer برای Shell | Done |
 | UI Guide (UI-00..UI-11) در دسترس و بدون نقض قوانین | Done |
-| الگوهای مشترک آماده ماژول (PageHeader, EmptyState, Can, ErrorBoundary, module scaffold) | Done |
+| الگوهای مشترک آماده ماژول (PageHeader, Breadcrumb, EmptyState, Can, ErrorBoundary, Form, DataTable, DirtyDialog, StatusChip, module scaffold) | Done |
 
 ---
 
-## 2. Sprint summary
+## 2. Task checklist T01–T18 (full)
+
+| کد | عنوان | وضعیت |
+|----|--------|--------|
+| T01 | API Client مرکزی | **Done** (Bearer, X-Tenant-ID, timeout, error normalize, limited retry on network/502–504). Refresh queue deferred — Backend has no refresh endpoint. |
+| T02 | Auth Store + Session (Zustand) | **Done** |
+| T03 | Auth Service Layer | **Done** (password, OTP, select-tenant, logout). Me/Refresh when Backend adds endpoints. |
+| T04 | صفحه Login | **Done** |
+| T05 | Route Protection / Auth Guard | **Done** (+ GuestGuard, IdleLock) |
+| T06 | Tenant Context Provider | **Done** |
+| T07 | تکمیل App Shell | **Done** (+ Breadcrumb pattern on PageHeader) |
+| T08 | ساختار پوشه‌ای ماژول‌محور | **Done** |
+| T09 | Shared Form Primitives | **Done** (`Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`, `FormGrid`) |
+| T10 | Shared Table / Data Display | **Done** (`DataTable` with page-size, empty-initial vs empty-search, skeleton) |
+| T11 | Overlay Dirty-Lock | **Done** (`DirtyDialog` — Escape/backdrop/X blocked while dirty) |
+| T12 | Feedback استاندارد | **Done** (Toast, Alert, Skeleton, EmptyState, StatusChip) |
+| T13 | Theme / Design Token Runtime | **Done** (base; advanced tenant branding remains post-P0 polish) |
+| T14 | Accessibility پایه Shell | **Done** (focus-visible global, aria-label on icon controls, prefers-reduced-motion) |
+| T15 | Environment & Config | **Done** |
+| T16 | Error Boundary + Global Error UX | **Done** |
+| T17 | تست دستی سناریوی کامل | **Documented** — requires PO run against live Backend |
+| T18 | سند بسته شدن FE-P0 | **Done** (this document v1.1) |
+
+---
+
+## 3. Sprint summary
 
 ### Sprint 1 — Blockers (T01–T06)
 
 - Central API Client (`src/api/client.ts`)
 - Auth types / store / service / TenantProvider
-- AuthGuard + IdleLock
+- AuthGuard + IdleLock + GuestGuard
 - Login page (password + OTP UX, human gate on threshold)
 
-### Sprint 2 — Shell ready for modules
+### Sprint 2 — Shell ready for modules (T07–T12)
 
-- Header/Sidebar with session data + Logout
-- GuestGuard for public auth routes
-- `Can` / `usePermission` (UI-only; Backend remains SoT)
-- `PageHeader`, `EmptyState`, `AppErrorBoundary`
-- Mobile navigation drawer
-- Module scaffold (`src/modules/_template`) + Organization placeholder page
+- Header/Sidebar with session data + Logout + mobile drawer
+- `Can` / `usePermission`
+- `PageHeader` + `Breadcrumb`, `EmptyState`, `AppErrorBoundary`
+- Module scaffold + Organization placeholder
+- **Form primitives**, **DataTable**, **DirtyDialog**, **StatusChip**
 
-### Sprint 3 — Quality & close
+### Sprint 3 — Quality & close (T13–T18)
 
-- Dashboard home shows live session snapshot
-- Organization route wired under shell
-- This closure checklist + known debt list
+- Theme tokens + reduced-motion + focus-visible
+- Dashboard session snapshot + Organization route
+- Closure checklist + known debt list
 
 ---
 
-## 3. Known debt (accepted for post-P0)
+## 4. Known debt (accepted for post-P0 — Backend or later phase)
 
 1. **Refresh token** — Backend still Sanctum personal token without refresh endpoint; 401 clears session only.
 2. **Tenant display name** — Header shows tenant UUID until a tenant profile endpoint is consumed.
@@ -58,10 +82,11 @@
 5. **Human-check** — Client-side slide only; rate-limit remains Backend responsibility.
 6. **E2E automated tests** — Manual scenario only in P0; Playwright suite deferred.
 7. **Search in header** — Visual placeholder; global search deferred to later phase.
+8. **Advanced tenant branding runtime** — Design tokens base done; full white-label runtime later.
 
 ---
 
-## 4. Manual acceptance scenario
+## 5. Manual acceptance scenario (T17)
 
 1. Open `/login` while logged out → form visible.
 2. Login with valid password → `/dashboard` shows user + roles + tenant id.
@@ -72,10 +97,11 @@
 7. After 3 bad password attempts, next **button click** shows human slide; after pass, login proceeds.
 8. Mobile width: hamburger opens drawer; navigation works.
 9. `/dashboard/ui-guide` and `/dashboard/organization` render inside shell.
+10. (Patterns) Form error under field, DirtyDialog blocks Escape when dirty, DataTable empty-search ≠ empty-initial.
 
 ---
 
-## 5. Next phase recommendation
+## 6. Next phase recommendation
 
 Per Kickoff Decision Record §4.3 module order:
 
@@ -84,6 +110,8 @@ Per Kickoff Decision Record §4.3 module order:
 3. Identity tenant-facing screens (profile, roles display)
 4. Inventory
 
+> Note: Any FE-P1/FE-P2 numbering that places Identity before Organization conflicts with the Locked Kickoff order and requires Architecture Amendment.
+
 ---
 
-**End of FE-P0 Closure Document**
+**End of FE-P0 Closure Document v1.1**

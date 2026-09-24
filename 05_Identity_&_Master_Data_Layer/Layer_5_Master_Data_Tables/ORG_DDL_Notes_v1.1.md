@@ -40,6 +40,8 @@ Related:
 - `erp_company_fiscal_assignments` — company ↔ `fin_fiscal_periods.period_id` (logical)
 - `erp_company_bank_accounts`, officers — company nested financial/people metadata
 
+**UI copy (FE):** field label «نقش شرکت در گروه»; options use plain language (شرکت عملیاتی / سطح تجمیع گروه / حذف معاملات درون‌گروه) plus helper text. Values stored remain the English codes above.
+
 ---
 
 ## 3. Branch & plant (`erp_branches`)
@@ -115,9 +117,30 @@ Creates ARYA-HQ (primary), ARYA-SUB (parent HQ, 80% ownership), HQ branch, BU, L
 
 ---
 
-## 9. Change log
+## 9. Deferred: commercial feature packs (platform / SaaS Admin)
+
+**Product intent:** capabilities such as multi-company, multi-branch, intercompany, consolidation entity kinds, and advanced hierarchy are **sellable** per tenant. Lower plans may only allow a single operating company (+ optional limited branches); higher plans unlock group features.
+
+**Owner module (future):** SaaS Platform / SaaS Admin — tenant subscription or feature flags, **not** hard-coded in Organization services today.
+
+**Suggested flag keys (draft, not implemented):**
+
+| Flag | Effect when OFF |
+|------|------------------|
+| `org.multi_company` | Block creating a second company; hide parent/ownership/IC hub cards |
+| `org.multi_branch` | Cap branches (e.g. 1) or hide branch create |
+| `org.entity_kind_advanced` | Hide CONSOLIDATION/ELIMINATION; force OPERATING |
+| `org.intercompany` | Hide IC routes/UI |
+| `org.business_unit` | Hide BU admin |
+
+**Now (v1.1):** all org APIs remain available for development/demo; UI always shows plain-language entity_kind help. Enforcement + billing UI is scheduled with platform packaging, not Organization P0–P7.
+
+---
+
+## 10. Change log
 
 | Version | Summary |
 |---------|---------|
 | v1.0 | Roadmap + ADR-ORG-001 |
 | **v1.1** | As-built DDL notes after P0–P7 implementation |
+| v1.1+ | FE entity_kind copy; deferred feature-pack note (§9) |

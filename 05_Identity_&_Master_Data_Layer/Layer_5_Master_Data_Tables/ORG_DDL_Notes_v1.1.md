@@ -117,23 +117,51 @@ Creates ARYA-HQ (primary), ARYA-SUB (parent HQ, 80% ownership), HQ branch, BU, L
 
 ---
 
-## 9. Deferred: commercial feature packs (platform / SaaS Admin)
+## 9. Commercial feature packs (platform / SaaS Admin) — product law
 
-**Product intent:** capabilities such as multi-company, multi-branch, intercompany, consolidation entity kinds, and advanced hierarchy are **sellable** per tenant. Lower plans may only allow a single operating company (+ optional limited branches); higher plans unlock group features.
+**Status:** Accepted product decision (2026-09-25). Implementation of flag enforcement is platform-owned; Organization module must be ready to respect flags on every surface.
 
-**Owner module (future):** SaaS Platform / SaaS Admin — tenant subscription or feature flags, **not** hard-coded in Organization services today.
+### 9.1 Product intent
 
-**Suggested flag keys (draft, not implemented):**
+Capabilities such as multi-company, multi-branch, intercompany, consolidation entity kinds, and advanced hierarchy are **sellable per tenant**. A tenant that did **not** purchase multi-company / multi-branch must still use the rest of Organization (departments, cost centers, officers, bank accounts, etc.) without being forced through multi-entity UX.
+
+### 9.2 Onboarding rule (platform owner)
+
+At tenant provisioning / onboarding, the **platform owner** (not the tenant end-user) creates:
+
+1. The **primary operating company** (already required by product).
+2. A **hidden default HQ branch** under that company (implicit single site).
+
+Downstream entities (departments and later logistics/finance scopes) attach to that default branch. When `org.multi_branch` is OFF, branch list/create is hidden or read-only; the default branch remains in data so models stay consistent.
+
+### 9.3 Gating rule (all Organization surfaces)
+
+Every Organization hub card, list page, create/edit flow, and related API entry path **must** be show/hide or allow/deny based on the tenant’s purchased feature list. Do not hard-code plan logic inside domain services; resolve flags from SaaS Platform / SaaS Admin (subscription or feature flags).
+
+### 9.4 Suggested flag keys (draft)
 
 | Flag | Effect when OFF |
 |------|------------------|
-| `org.multi_company` | Block creating a second company; hide parent/ownership/IC hub cards |
-| `org.multi_branch` | Cap branches (e.g. 1) or hide branch create |
+| `org.multi_company` | No second company; hide companies list create, parent/ownership, multi-company hub paths; keep primary company usable |
+| `org.multi_branch` | No branch create/list management; use hidden default HQ branch only; branch selector hidden when only one branch |
 | `org.entity_kind_advanced` | Hide CONSOLIDATION/ELIMINATION; force OPERATING |
-| `org.intercompany` | Hide IC routes/UI |
+| `org.intercompany` | Hide IC partners/rules UI and routes |
 | `org.business_unit` | Hide BU admin |
+| `org.hierarchy_advanced` | Hide multi-hierarchy admin if sold separately |
 
-**Now (v1.1):** all org APIs remain available for development/demo; UI always shows plain-language entity_kind help. Enforcement + billing UI is scheduled with platform packaging, not Organization P0–P7.
+### 9.5 Default path when packs are OFF
+
+Single primary company + one implicit HQ branch → departments and other company-scoped features work. UI never requires the customer to “create a branch first” unless `org.multi_branch` is ON.
+
+### 9.6 Implementation ownership
+
+| Layer | Responsibility |
+|-------|----------------|
+| SaaS Admin / Platform | Store flags, billing, onboarding (company + default branch) |
+| Organization BE | Optional guards on create second company/branch; always allow ops on primary + default branch |
+| Organization FE | Hub cards, routes, filters, and forms respect flags; hide multi-entity noise |
+
+**Now:** APIs remain open for development/demo. Enforcement + billing UI ships with platform packaging; this section is the binding product law for that work.
 
 ---
 
@@ -144,3 +172,4 @@ Creates ARYA-HQ (primary), ARYA-SUB (parent HQ, 80% ownership), HQ branch, BU, L
 | v1.0 | Roadmap + ADR-ORG-001 |
 | **v1.1** | As-built DDL notes after P0–P7 implementation |
 | v1.1+ | FE entity_kind copy; deferred feature-pack note (§9) |
+| **v1.2** | §9 elevated to accepted product law: platform onboarding + default HQ branch + feature-gated org surfaces (2026-09-25) |

@@ -144,10 +144,12 @@ Every Organization hub card, list page, create/edit flow, and related API entry 
 |------|------------------|
 | `org.multi_company` | No second company; hide companies list create, parent/ownership, multi-company hub paths; keep primary company usable |
 | `org.multi_branch` | No branch create/list management; use hidden default HQ branch only; branch selector hidden when only one branch |
+| `org.multi_business_unit` | Hide BU admin, assign-company UI, and BU-dimension reporting entry points; single-dimension ops on default company + HQ branch |
 | `org.entity_kind_advanced` | Hide CONSOLIDATION/ELIMINATION; force OPERATING |
 | `org.intercompany` | Hide IC partners/rules UI and routes |
-| `org.business_unit` | Hide BU admin |
 | `org.hierarchy_advanced` | Hide multi-hierarchy admin if sold separately |
+
+> **Deprecated alias:** `org.business_unit` — use `org.multi_business_unit` for catalog clarity.
 
 ### 9.5 Default path when packs are OFF
 
@@ -157,11 +159,22 @@ Single primary company + one implicit HQ branch → departments and other compan
 
 | Layer | Responsibility |
 |-------|----------------|
-| SaaS Admin / Platform | Store flags, billing, onboarding (company + default branch) |
-| Organization BE | Optional guards on create second company/branch; always allow ops on primary + default branch |
+| SaaS Admin / Platform | Store flags, billing, onboarding (company + default branch); feature catalog for Platform Owner console |
+| Organization BE | Optional guards on create second company/branch/BU; always allow ops on primary + default branch |
 | Organization FE | Hub cards, routes, filters, and forms respect flags; hide multi-entity noise |
 
 **Now:** APIs remain open for development/demo. Enforcement + billing UI ships with platform packaging; this section is the binding product law for that work.
+
+### 9.7 Independent sellable packs (binding) — 2026-09-25
+
+**`org.multi_company`, `org.multi_branch`, and `org.multi_business_unit` are independent commercial products.**
+
+1. Never gate Business Unit behind multi-company or multi-branch. A single-company, single-site tenant may purchase only BU for product-line / market reporting (inventory, sales, revenue split).
+2. Show/hide each hub card, list, create flow, and related API solely by **that pack’s** flag.
+3. **Without** `org.multi_business_unit`: single-dimension path — all operations under the primary company and hidden default HQ branch; no BU admin UI.
+4. **With** `org.multi_business_unit`: tenant may define multiple business units and use split reporting even when multi-company and multi-branch are OFF.
+
+**Platform Owner console (future):** when building SaaS Admin feature catalog and billing, list these three flags as separate line items with independent enable/disable per tenant.
 
 ---
 
@@ -173,3 +186,4 @@ Single primary company + one implicit HQ branch → departments and other compan
 | **v1.1** | As-built DDL notes after P0–P7 implementation |
 | v1.1+ | FE entity_kind copy; deferred feature-pack note (§9) |
 | **v1.2** | §9 elevated to accepted product law: platform onboarding + default HQ branch + feature-gated org surfaces (2026-09-25) |
+| **v1.3** | §9.7 independent packs: multi_company / multi_branch / multi_business_unit sold separately; BU not bundled under multi-entity (2026-09-25) |

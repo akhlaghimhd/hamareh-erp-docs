@@ -2,6 +2,8 @@
 
 - **Status:** Accepted (product direction: full competitive multi-entity IC)
 - **Date:** 2026-09-28
+- **Org-IC-P1:** **CLOSED** 2026-09-28 (config + UI + tests + outbox events)
+- **Debt / parked backlog:** `ORG_Intercompany_Status_and_Debt_v1.0.md` (same folder)
 - **Supersedes partial stance in ADR-ORG-001 §ADR-ORG-06 only for sequencing detail**
 - **Owner:** Organization (config) + Accounting (posting) + Sales/Purch/Inventory (operational docs)
 
@@ -12,6 +14,8 @@
 Product owner requires Hamareh to match **shared capabilities of major multi-entity ERPs** (SAP S/4HANA, Oracle Fusion + FCCS/EPM, NetSuite OneWorld, Microsoft Dynamics 365 Finance/BC, Sage Intacct, Acumatica, Workday Financials, Odoo Enterprise), not a skeleton mapping screen.
 
 ADR-ORG-001 already locked: *Full intercompany + elimination is MUST*. This ADR defines the **capability matrix**, **module ownership**, and **phased delivery** so Organization does not become an accounting engine, and Accounting does not invent parallel partner maps.
+
+**Scope boundary:** Intercompany here means legal entities **inside one tenant (one SaaS customer group)**. Cross-tenant trading between unrelated platform customers is **out of scope** and must not be mixed into Org IC tables or this ADR.
 
 ---
 
@@ -65,23 +69,30 @@ ADR-ORG-001 already locked: *Full intercompany + elimination is MUST*. This ADR 
 
 ---
 
-## 4. Organization-phase deliverables (this ADR execution)
+## 4. Organization-phase deliverables
 
-1. Complete **admin UX** for partners and rules (list, create, update, soft-delete, activate/deactivate).
+### Org-IC-P1 — CLOSED (2026-09-28)
+
+1. Admin UX for partners and rules (list, create, update, soft-delete, activate/deactivate).
 2. Partner fields: from/to company, optional `partner_customer_id` / `partner_vendor_id`, notes, is_active.
 3. Rule fields: code, name, source/target doc types (catalog), auto_create_mirror, is_active, notes.
-4. List APIs enrich with company display names (never force UI to show raw UUID only).
-5. Doc-type catalog endpoint (stable codes for FE selects).
-6. Permissions already: `organization.intercompany.view|manage`.
-7. Respect product flag `org.intercompany` when Platform enforcement ships (UI/API gate).
+4. List APIs enrich with company display names.
+5. Doc-type catalog endpoint.
+6. Permissions: `organization.intercompany.view|manage`.
+7. Outbox events: partner/rule upserted + deleted (`organization.intercompany_*.v1`).
+8. FE deferred-phase hints on `/dashboard/organization/intercompany`.
+9. Tests: `OrgP5SalesPurchIcTest` extended.
 
-**Explicit non-goals for Organization code:** posting journals, creating sales/purchase documents, running elimination math, netting cash.
+**Explicit non-goals for Organization code:** posting journals, creating sales/purchase documents, running elimination math, netting cash, cross-tenant network trading.
+
+**Platform flag** `org.intercompany` enforcement remains debt IC-D-PLT-01 until SaaS Admin catalog ships.
 
 ---
 
 ## 5. Downstream contracts (must not break)
 
-- Event (planned): `organization.intercompany_partner.upserted.v1` / `organization.intercompany_rule.upserted.v1`
+- `organization.intercompany_partner.upserted.v1` / `.deleted.v1`
+- `organization.intercompany_rule.upserted.v1` / `.deleted.v1`
 - Accounting consumes partner pair + elim hierarchy nodes for period close.
 - Sales/Purch read `auto_create_mirror` + doc type pair before generating counterparty docs.
 
@@ -89,19 +100,21 @@ ADR-ORG-001 already locked: *Full intercompany + elimination is MUST*. This ADR 
 
 ## 6. Sequencing
 
-| Phase | Scope |
-|-------|--------|
-| **Org-IC-P1** (now) | Config center complete (this implementation wave) |
-| **Acc-IC-P1** | Due-to/Due-from accounts, IC journal, elim postings, reconciliation report |
-| **Ops-IC-P1** | SO↔PO / Invoice↔Bill auto-mirror |
-| **Acc-IC-P2** | Netting, multi-currency CTA hardening |
-| **Adv-IC** | Transfer pricing, advanced stock-in-transit, multi-stage value chain |
+| Phase | Scope | Status |
+|-------|--------|--------|
+| **Org-IC-P1** | Config center complete | **CLOSED** |
+| **Acc-IC-P1** | Due-to/Due-from, IC journal, elim postings, reconciliation | PARKED — see debt file |
+| **Ops-IC-P1** | SO↔PO / Invoice↔Bill auto-mirror | PARKED — see debt file |
+| **Acc-IC-P2** | Netting, multi-currency CTA hardening | PARKED |
+| **Adv-IC** | Transfer pricing, stock-in-transit, multi-stage value chain | PARKED |
+
+Detailed debt IDs: `ORG_Intercompany_Status_and_Debt_v1.0.md`.
 
 ---
 
 ## 7. Decision
 
-Accepted: Hamareh targets **full competitive IC baseline (IC-01…IC-10)**. Organization owns configuration SoT; operational and accounting capabilities are mandatory follow-on work, not optional polish.
+Accepted: Hamareh targets **full competitive IC baseline (IC-01…IC-10)** **within a single tenant**. Organization owns configuration SoT; operational and accounting capabilities are mandatory follow-on work tracked in the debt document — not optional polish.
 
 ---
 
@@ -110,3 +123,4 @@ Accepted: Hamareh targets **full competitive IC baseline (IC-01…IC-10)**. Orga
 | Version | Date | Notes |
 |---------|------|-------|
 | 1.0 | 2026-09-28 | Full matrix + ownership + Org-IC-P1 scope |
+| 1.0.1 | 2026-09-28 | Org-IC-P1 CLOSED; debt link; out-of-scope cross-tenant |

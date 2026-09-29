@@ -1,6 +1,6 @@
 # ADR — Competitive Upgrade: Identity & Organization Layers v1.0
 
-- **Status:** Accepted — Wave 1 CLOSED; Wave 2 Identity CLOSED; Wave 3 in progress
+- **Status:** Accepted — Wave 1 CLOSED; Wave 2 Identity CLOSED; Wave 3 Identity foundation CLOSED
 - **Last update:** 2026-09-29
 
 ## Wave 1 status (final)
@@ -27,22 +27,24 @@
 | ID-W2-05 Joiner / Mover / Leaver | DONE |
 | ORG-W2 IC / Consol | BLOCKED on Accounting module |
 
-### Explicit deferred (Wave 2)
-- FE for Access Cert / Privileged / JML / Scope purpose UX
-- Billing-driven pack upgrade events
+## Wave 3 status (Identity foundation CLOSED)
+
+| Code | Status |
+|------|--------|
+| ID-W3-01 Time-bounded role assignment | DONE |
+| ID-W3-02 Role assignment approval workflow | DONE |
+| ID-W3-03 Session / access re-evaluation | DONE |
+| ID-W3-04 Identity audit export package | DONE |
+| ID-W3-05 SCIM 2.0 Users foundation | DONE |
+
+### Explicit residual (not blocking Wave 3 foundation)
+- SCIM HTTP routes (`/scim/v2/*`) + bearer client-credentials auth
+- Wire `IdentitySessionReevaluationService::invalidateUser` into all remaining mutators (RoleService.assign already partially caches; Approval approve wired)
+- FE for Access Cert / Privileged / JML / Approval / SCIM admin
 - SAML ACS assertion parse + OIDC JWKS verify
+- Billing-driven pack upgrade events
 
-## Wave 3 — Advanced Identity controls
-
-| Code | Title | Type | Status |
-|------|-------|------|--------|
-| ID-W3-01 | Time-bounded role assignment (valid_from / valid_to) | از صفر | IN PROGRESS |
-| ID-W3-02 | Approval workflow for sensitive role assign | از صفر | TODO |
-| ID-W3-03 | Session / continuous access re-evaluation hook | از صفر | TODO |
-| ID-W3-04 | Audit export package (membership + role + privilege) | از صفر | TODO |
-| ID-W3-05 | SCIM 2.0 provisioning foundation (enterprise IdP) | از صفر | TODO |
-| ORG-W3-01 | Hierarchy validity windows enforced in Org services | ارتقا | TODO |
-| ORG-W3-02 | IC / Consol (when Accounting ready) | از صفر | BLOCKED |
-
-### Next
-Complete ID-W3-01 (wire assign API + expire job optional), then ID-W3-02 or ID-W3-04.
+### Next priorities
+1. Residual wiring + SCIM routes (optional polish)
+2. FE Identity advanced surfaces
+3. ORG-W3 IC/Consol when Accounting module is ready

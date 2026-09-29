@@ -3,6 +3,7 @@
 - **Document ID:** ADR-COMP-UPG-ID-ORG-v1.0
 - **Status:** Accepted (product direction locked for execution)
 - **Date:** 2026-09-29
+- **Last progress update:** 2026-09-29
 - **Scope:** IdentityCore (Layer 4) + Organization (Layer 5) + Platform (SaaS Admin feature catalog)
 - **Related:** ORG_Layer_Completion_Roadmap_v1.0, ORG_Smart_Hierarchy_Product_Law_v1.0, ORG_Smart_Hierarchy_Status_and_Debt_v1.0, ADR-ORG-001, ADR-ORG-002, Database Layer 4 - Identity & Access Core
 - **Code repos:** akhlaghimhd/hamarehSaasErp, akhlaghimhd/hamarehSaasErp-Front
@@ -56,12 +57,12 @@ Status values: `TODO` | `IN_PROGRESS` | `DONE` | `BLOCKED`
 
 | Code | Title | Type | Owner | Status | Notes |
 |------|-------|------|-------|--------|-------|
-| ID-W1-01 | SoD Matrix (role conflict rules + risk detection) | New | IdentityCore | TODO | Conflict pairs, severity, mitigation; report API |
+| ID-W1-01 | SoD Matrix (role conflict rules + risk detection) | New | IdentityCore | IN_PROGRESS | Conflict pairs, severity, mitigation; report API |
 | ID-W1-02 | SoD evaluation on role assign | New | IdentityCore | TODO | Block or warn on conflicting assignment |
 | ID-W1-03 | SSO (OIDC + SAML) foundation | New | IdentityCore | TODO | Login via external IdP; map claims to tenant_user |
 | ID-W1-04 | MFA (TOTP + recovery) | New | IdentityCore | TODO | Optional per tenant/user; enforce on sensitive actions |
-| ID-W1-05 | Change-password endpoint + Credential Policy | Upgrade | IdentityCore | TODO | Complexity, history, lockout, last_password_change; close T05 debt |
-| ID-W1-06 | Full user-roles read API + replace semantics | Upgrade | IdentityCore | TODO | GET list; replace (not only append); history |
+| ID-W1-05 | Change-password endpoint + Credential Policy | Upgrade | IdentityCore | **DONE** | Already in code: AuthController::changePassword, PasswordPolicyService, setPassword, forgot-password confirm; tests PasswordPolicyAndSetPasswordTest. Residual: password-history store (optional later). |
+| ID-W1-06 | Full user-roles read API + replace semantics | Upgrade | IdentityCore | **DONE** | Already in code: GET roles/user/{userId}, RoleService::listRolesForUser, assignRoleToUser does full sync (add+remove). |
 
 ### Organization (Wave 1 support)
 
@@ -158,16 +159,15 @@ ID-W2-04         ──►  ORG hierarchy purpose catalog (already DONE foundati
 
 ---
 
-## 9. Immediate next action (start of development)
+## 9. Progress log
 
-**Recommended first slice (Wave 1 start):**
+| Date | Codes | Action |
+|------|-------|--------|
+| 2026-09-29 | — | ADR v1.0 accepted |
+| 2026-09-29 | ID-W1-05, ID-W1-06 | Marked **DONE** after code audit (change-password + policy + user-roles list/replace already shipped) |
+| 2026-09-29 | ID-W1-01 | Started SoD matrix implementation |
 
-1. PLT-W1-01 — Feature Catalog table + service + API (Platform module or Core)
-2. ID-W1-05 — Change-password + Credential Policy (closes known debt)
-3. ID-W1-06 — Full user-roles read + replace
-4. ID-W1-01 — SoD matrix schema + basic evaluation
-
-After these four land, proceed to SSO/MFA and pack enforcement.
+**Next active work:** ID-W1-01 SoD schema + service + evaluation hook (ID-W1-02), then PLT-W1-01 Feature Catalog.
 
 ---
 
@@ -176,6 +176,7 @@ After these four land, proceed to SSO/MFA and pack enforcement.
 | Version | Date | Notes |
 |---------|------|-------|
 | 1.0 | 2026-09-29 | Initial competitive upgrade worklist; Waves 1–3 locked |
+| 1.0.1 | 2026-09-29 | Progress: ID-W1-05/06 DONE; ID-W1-01 IN_PROGRESS |
 
 **Citation name:** `ADR_Competitive_Upgrade_Identity_Organization_v1.0`  
 **Path:** `05_Identity_&_Master_Data_Layer/ADR_Competitive_Upgrade_Identity_Organization_v1.0.md`

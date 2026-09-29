@@ -3,12 +3,12 @@
 - **Document ID:** ADR-COMP-UPG-ID-ORG-v1.0
 - **Status:** Accepted (product direction locked for execution)
 - **Date:** 2026-09-29
-- **Last progress update:** 2026-09-29 (PLT-W1-02 green)
+- **Last progress update:** 2026-09-29 (Wave 1 closed for planned track)
 - **Scope:** IdentityCore (Layer 4) + Organization (Layer 5) + Platform (SaaS Admin feature catalog)
 
 ---
 
-## Progress (Wave 1)
+## Progress (Wave 1) — CLOSED for planned BE track
 
 | Code | Status | Evidence |
 |------|--------|----------|
@@ -16,27 +16,23 @@
 | ID-W1-06 | **DONE** | GET roles/user/{id}, assignRoleToUser full sync |
 | ID-W1-01 | **DONE foundation** | tenant_sod_rules + RLS, SodService, SodController, SodRulesTest green |
 | ID-W1-02 | **DONE foundation** | RoleService::assignRoleToUser → SodService::assertAssignable |
-| PLT-W1-01 | **DONE** | platform_feature_catalog + tenant_feature_entitlements + FeatureCatalogService + FeatureCatalogServiceTest (6 green) |
-| PLT-W1-02 | **DONE** | Company/Branch/BU/OrgHierarchy gates + FeaturePackGateTest (6 green) |
-| PLT-W1-03 | **IN PROGRESS** | Freeze on disable (is_enabled=false keeps data; create blocked by assertEnabled) |
-| ID-W1-03/04 | TODO | SSO / MFA |
-| ORG-W1 residual | deferred | pack UX on FE after freeze |
+| PLT-W1-01 | **DONE** | platform_feature_catalog + tenant_feature_entitlements + FeatureCatalogService + 6 tests green |
+| PLT-W1-02 | **DONE** | Company/Branch/BU/OrgHierarchy gates + FeaturePackGateTest |
+| PLT-W1-03 | **DONE** | freezeEntitlement / unfreeze; freeze keeps data, blocks new create |
+| ID-W1-03 | **DONE foundation** | TOTP MFA (native), recovery codes, login challenge mfa_challenge, MfaServiceTest 5 green |
+| ID-W1-04 | **TODO (deferred)** | SSO OIDC/SAML — next competitive slice or Wave 2 parallel |
+| ORG-W1 residual | deferred | FE hub cards gate by entitlement; pack UX |
 
-### Residual (non-blocking)
-- PermissionSeeder: `identity.sod.view`, `identity.sod.manage`
+### Residual closed
+- PermissionSeeder: `identity.sod.view`, `identity.sod.manage`, `identity.mfa.manage` (ensureIdentityExtras)
+
+### Residual open (non-blocking Wave 1)
 - Optional demo SoD conflict rules for demo tenant
-- FE: hub cards gate by entitlement codes
+- FE: MFA setup UI + entitlement gate on hub cards
+- ID-W1-04 SSO
 
-### Code commits (hamarehSaasErp) — selected
-- SoD: 497b244, 99357e6, 93c8744, b1e8cb2 (SodRulesTest)
-- Feature Catalog: 993717a, 34b71a4
-- Org feature gates: 313664e, 0cfdce4, 2f14027, 11e3b0f (OrgHierarchy restore + CUSTOM gate)
-
-### Docs commits (hamareh-erp-docs)
-- abd36df ADR v1.0 accepted
-- this update — PLT-W1-01/02 DONE
-
-**Next:** close PLT-W1-03 freeze semantics explicitly, then ID-W1-03 MFA foundation (or residual seeder).
+### Next
+- **ID-W1-04 SSO** (if closing Wave 1 fully) **or** start **Wave 2** (Access Certification, Privileged Access, IC Posting with Accounting)
 
 ---
 
@@ -52,3 +48,8 @@
 - Pairwise role conflicts in `tenant_sod_rules` (tenant-scoped + RLS).
 - Enforcement modes: `BLOCK` | `WARN`.
 - Hook: before `RoleService::assignRoleToUser` mutation.
+
+## MFA law (foundation)
+
+- TOTP (RFC 6238) native; recovery codes single-use.
+- Login: if MFA confirmed → return `requires_mfa` + short-lived `mfa_challenge` token; full JWT only after verify.

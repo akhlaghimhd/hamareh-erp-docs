@@ -59,6 +59,7 @@
 قانون ۴.۲: مدل دسترسی باید دقیقاً از این زنجیره پیروی کند: User → Role → Permission → Scope → Resource.
 قانون ۴.۳: سیستم Scope باید تمام محدودیت‌های سطح دسترسی را مدیریت کند (مثل Company, Branch, Warehouse Scope). ماژول جدید نباید سیستم Scope جدید ایجاد کند.
 قانون ۴.۴: هر Request ورودی باید شامل JWT Context امنیتی باشد که user_id, tenant_id, roles, scopes را حمل می‌کند.
+قانون ۴.۵: مدل دسترسی هلدینگ (ADR-ID-ORG-003 LOCKED): یک tenant برای کل گروه هلدینگ. شرکت مادر با Scope گروهی می‌تواند دید فلت همه شرکت‌ها یا فیلتر per-company داشته باشد (داده شرکت خودش حفظ می‌شود). شرکت فرزند فقط دایره Scope خودش را می‌بیند و Delegated Admin برای مدیریت اعضا/نقش‌ها فقط داخل همان Scope اعمال می‌شود (بدون دید/کنترل شرکت خواهر). کاتالوگ نقش/مجوز tenant-level می‌ماند؛ محدودیت روی assignment و داده است. tenant تک‌شرکت مسیر ساده بدون UX هلدینگ. ایزوله شرکت‌ها با Scope اپلیکیشن است نه tenant جدا و نه جایگزینی RLS. مرجع کامل: 05_Identity_&_Master_Data_Layer/ADR-ID-ORG-003_Holding_Access_Model_and_Delegated_Admin_v1.0.md
 🧩 ۵. حاکمیت داده‌های پایه (Master Data Governance)
 جلوگیری از هرج‌ومرج در داده‌های مشترک.
 قانون ۵.۱: هر موجودیت Master Data فقط یک مالک (Owner Module) دارد و نسخه واحد حقیقت (Single Source of Truth) است.

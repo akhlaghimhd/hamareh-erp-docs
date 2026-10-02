@@ -46,6 +46,10 @@ Do **not** use superseded numbering (e.g. Identity as Layer 2 from older Bluepri
 ### 5. Identity & Master Data / Foundation
 - [Layer 4: Identity & Access Core](./05_Identity_&_Master_Data_Layer/Layer_4_Identity_Core/Database%20Layer%204%20-%20Identity%20%26%20Access%20Core.md)
 - [Layer 5 Master Data](./05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ERP%20SaaS%20Master%20Data%20Architecture%20Standard%20v1.1.md)
+- [**ADR-ID-ORG-003 Holding Access Model & Delegated Admin (LOCKED)**](./05_Identity_&_Master_Data_Layer/ADR-ID-ORG-003_Holding_Access_Model_and_Delegated_Admin_v1.0.md)
+- [ADR Competitive Upgrade Identity & Organization](./05_Identity_&_Master_Data_Layer/ADR_Competitive_Upgrade_Identity_Organization_v1.0.md)
+- [ORG Smart Hierarchy Product Law](./05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ORG_Smart_Hierarchy_Product_Law_v1.0.md)
+- [ORG DDL Notes](./05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ORG_DDL_Notes_v1.1.md)
 
 ### 6. Vertical ERP Modules (Layer 6)
 - [Workflow Engine](./06_Vertical_ERP_Modules/01_Workflow_Engine_Portal/)
@@ -55,4 +59,4 @@ Do **not** use superseded numbering (e.g. Identity as Layer 2 from older Bluepri
 - [Manufacturing & Production](./06_Vertical_ERP_Modules/05_Manufacturing_&_Production/)
 
 ---
-*Last Updated: 2026-08-29*
+*Last Updated: 2026-10-02*

@@ -1,7 +1,7 @@
 # ADR — Competitive Upgrade: Identity & Organization Layers v1.0
 
 - **Status:** Accepted — Wave 1 CLOSED; Wave 2 Identity CLOSED; Wave 3 Identity foundation CLOSED
-- **Last update:** 2026-09-29
+- **Last update:** 2026-10-02
 
 ## Wave 1 status (final)
 
@@ -44,7 +44,20 @@
 - SAML ACS assertion parse + OIDC JWKS verify
 - Billing-driven pack upgrade events
 
+## Architecture addendum (2026-10-02)
+
+**ADR-ID-ORG-003 — Holding Access Model & Delegated Administration v1.0** is **Accepted / LOCKED**.
+
+- Single tenant per holding group
+- Parent: group-wide Scope + flat vs per-company view
+- Child: hard company Scope + Delegated Identity admin (no sibling visibility)
+- Single-company tenants: simple path unchanged
+- Implementation phases H0–H5 defined in that ADR (H0 = this lock)
+
+Document path: `05_Identity_&_Master_Data_Layer/ADR-ID-ORG-003_Holding_Access_Model_and_Delegated_Admin_v1.0.md`
+
 ### Next priorities
-1. Residual wiring + SCIM routes (optional polish)
-2. FE Identity advanced surfaces
-3. ORG-W3 IC/Consol when Accounting module is ready
+1. **H1–H2** Scope-aware Identity member list/write + tests (ADR-ID-ORG-003)
+2. Residual wiring + SCIM routes (optional polish)
+3. FE Identity advanced surfaces + holding view modes (H3–H4)
+4. ORG-W3 IC/Consol when Accounting module is ready

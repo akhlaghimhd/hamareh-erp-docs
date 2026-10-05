@@ -29,8 +29,8 @@ These notes capture the **as-built** schema surface for the Organization bounded
 | `trade_name` | Optional commercial name |
 | `company_type` / tax / registration fields | P0 enrichment |
 | `status` | Legal status; `is_active` retained for BC |
-| `is_primary` | One primary per tenant (partial unique) |
-| `parent_company_id` | Same-tenant logical parent; cycle guard in service |
+| `is_primary` | One primary per tenant (partial unique); **platform-provisioned root is immutable for tenant callers** (ADR-ID-ORG-003 §3.2) |
+| `parent_company_id` | Same-tenant logical parent; cycle guard; **required for every company after the primary root** |
 | `entity_kind` | `OPERATING` \| `CONSOLIDATION` \| `ELIMINATION` |
 | `base_currency_id`, `chart_of_accounts_id`, `default_consol_rate_type` | Logical refs; no cross-module FK |
 
@@ -40,7 +40,9 @@ Related:
 - `erp_company_fiscal_assignments` — company ↔ `fin_fiscal_periods.period_id` (logical)
 - `erp_company_bank_accounts`, officers — company nested financial/people metadata
 
-**UI copy (FE):** field label «نقش شرکت در گروه»; options use plain language (شرکت عملیاتی / سطح تجمیع گروه / حذف معاملات درون‌گروه) plus helper text. Values stored remain the English codes above.
+**UI copy (FE):** field label «نقش شرکت در گروه»; options use plain language (شرکت عملیاتی / شرکت هلدینگ / سطح تلفیق / شرکت حذفی فنی) plus helper text. Values stored remain the English codes above.
+
+**Company soft-delete:** cascades soft-delete of departments then branches under that company (default HQ branch is auto-created; delete must not fail solely because of it). Primary and companies with child companies remain non-deletable.
 
 ---
 
@@ -178,6 +180,43 @@ Single primary company + one implicit HQ branch → departments and other compan
 
 ---
 
+## 11. Soft delete, retention, and physical purge (platform-wide product law) — 2026-10-05
+
+**Status:** Accepted. Applies to Organization and is the template for **all modules** (Identity lists, Sales structure, IC, future Accounting documents, etc.).
+
+### 11.1 Non-negotiables
+
+1. **Soft delete remains the only customer-facing delete** for operational tables (platform Law 1.4). Hard delete is never the primary UX path.
+2. Soft-deleted rows stay queryable in a **deleted / recycle** membership filter for recovery and audit.
+3. **Physical purge** is allowed only after a **retention window**, via a **scheduled job**, with **referential guards**, and preferably with an audit/outbox event. Not ad-hoc `DELETE FROM` from list pages.
+4. Data under **statutory retention** (tax, books, regulated docs) must not be purged early; use archive or longer retention, not silent hard delete.
+
+### 11.2 Default retention (draft, configurable per tenant later)
+
+| Class | Examples | Default retention in recycle bin |
+|-------|----------|----------------------------------|
+| A — Org / Identity masters | Non-primary company, branch, department, unused role | 90 days |
+| B — Operational documents | Invoices, stock docs, journals (future modules) | Jurisdiction + min 12–24 months |
+| C — Non-purgeable via tenant UI | Primary company, last owner, open legal holds | Platform support only |
+
+### 11.3 Implementation shape (binding direction)
+
+| Piece | Responsibility |
+|-------|----------------|
+| `deleted_at` / `deleted_by` | Already required on operational tables |
+| Tenant setting `soft_delete_retention_days_*` (future) | SaaS / tenant settings |
+| Command `erp:purge-soft-deleted` (future P1) | Daily job; allowlist of entity types; skip if live references |
+| UI recycle bin | Show retention hint; optional “permanent delete” only after policy or for Platform Owner |
+| Index hygiene | Prefer partial indexes for active lists so recycle volume does not slow day-to-day lists |
+
+### 11.4 Rollout debt
+
+1. **Companies list (first):** cascade soft-delete + recycle UX copy / retention note.  
+2. **Then same pattern:** branches, departments, members, roles, scopes, sales structure, IC partners/rules, and every future list with a deleted filter.  
+3. Job + settings ship with Platform packaging; domain services only expose purge-safe predicates.
+
+---
+
 ## 10. Change log
 
 | Version | Summary |
@@ -187,3 +226,4 @@ Single primary company + one implicit HQ branch → departments and other compan
 | v1.1+ | FE entity_kind copy; deferred feature-pack note (§9) |
 | **v1.2** | §9 elevated to accepted product law: platform onboarding + default HQ branch + feature-gated org surfaces (2026-09-25) |
 | **v1.3** | §9.7 independent packs: multi_company / multi_branch / multi_business_unit sold separately; BU not bundled under multi-entity (2026-09-25) |
+| **v1.4** | §11 soft-delete retention/purge law; single-root company notes in §2 (2026-10-05) |

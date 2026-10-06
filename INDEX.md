@@ -28,6 +28,7 @@ Do **not** use superseded numbering (e.g. Identity as Layer 2 from older Bluepri
 
 ### 2. System Blueprint & Roadmaps
 - [**ADD Layer / Module / Code Mapping (SSOT)**](./02_System_Blueprint_&_Roadmaps/ADD_Layer_Module_Code_Mapping_v1.0.md)
+- [**Project Debt Register v1.0 (SSOT بدهی‌ها)**](./02_System_Blueprint_&_Roadmaps/Project_Debt_Register_v1.0.md)
 - [Consolidated Blueprint v2.1](./02_System_Blueprint_&_Roadmaps/ERP%20SaaS%20Architecture%20Consolidated%20Blueprint%20v2.0.md)
 - [Module Architecture Map v1.1](./02_System_Blueprint_&_Roadmaps/ERP%20SaaS%20Module%20Architecture%20Map%20v1.md)
 - [System Architecture Blueprint](./02_System_Blueprint_&_Roadmaps/ERP%20SaaS%20System%20Architecture%20Blueprint.md)
@@ -59,4 +60,4 @@ Do **not** use superseded numbering (e.g. Identity as Layer 2 from older Bluepri
 - [Manufacturing & Production](./06_Vertical_ERP_Modules/05_Manufacturing_&_Production/)
 
 ---
-*Last Updated: 2026-10-02*
+*Last Updated: 2026-10-06*

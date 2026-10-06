@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-06T20:10:00+02:00  
+**Last updated:** 2026-10-06T20:55:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8` (`git show cf30dd8:02_System_Blueprint_&_Roadmaps/Project_Debt_Register_v1.0.md`). This index carries current SAASADM close-out + live status for platform debts.
@@ -28,7 +28,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |---------|-------|--------|
 | DEBT-PLT-001 | SaaS Admin feature catalog + pack purchase API | **CLOSED** — L1 FeatureCatalog + admin APIs + FE `/admin` shell |
 | DEBT-PLT-002 | Dual-approval tenant settings UI | **CLOSED** — formal Identity tenant settings (`/dashboard/identity/settings`); dual-approval stays in `tenant_settings` |
-| DEBT-PLT-003 | Tenant retention setting UI + purge job | **PARTIAL** — platform `retention.*` keys seeded; purge job + tenant override UX still OPEN (DEBT-ORG-007 / ID-003) |
+| DEBT-PLT-003 | Tenant retention setting UI + purge job | **PARTIAL** — platform `retention.*` keys seeded; purge job Org masters P0 shipped; tenant override UX still OPEN |
 
 ---
 
@@ -51,7 +51,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-06T19:50:00+02:00 |
 | **6. Owner decision** | Shipped: login, tenants list, feature-packs grant/revoke, system-settings. |
 | **7. Suggestion** | Optional polish only (FA pack labels, richer tenant detail). |
-| **Status** | **CLOSED** — 2026-10-06 (Front `9ac2003`+) |
+| **Status** | **CLOSED** — 2026-10-06 |
 
 ### DEBT-SAAS-002 — Tenant dual-approval settings formalization
 
@@ -64,7 +64,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-06T19:50:00+02:00 |
 | **6. Owner decision** | `/dashboard/identity/settings` is formal SoT for tenant dual-approval; not platform system_settings. |
 | **7. Suggestion** | Purge/retention job remains DEBT-ORG-007 / ID-003. |
-| **Status** | **CLOSED** — 2026-10-06 (Front `793e34d9`) |
+| **Status** | **CLOSED** — 2026-10-06 |
 
 ### Org / Identity pack residuals (index)
 
@@ -72,10 +72,24 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |---------|--------|
 | DEBT-ORG-001 | PARTIAL — BE CLOSED; FE hub hints via enabled_codes |
 | DEBT-ORG-002 | CLOSED (BE) |
+| **DEBT-ORG-003** | **CLOSED** — 2026-10-06: packs `org.sales_structure` / `org.purch_structure`; create gated on SalesOrg/PurchOrg services + SalesStructureController store*; FE hub packHint; tests `SalesPurchFeaturePackGateTest` |
 | DEBT-ORG-008 | PARTIAL — BE CLOSED; hub shows pack hints |
 | DEBT-ID-009 | PARTIAL — catalog SoT exists; Holding H4/H5 product rules open |
 | DEBT-ID-001…008, 010–011 | See full tables at `cf30dd8` |
-| DEBT-ORG-003…011 | See full tables at `cf30dd8` |
+| DEBT-ORG-004…011 | See full tables at `cf30dd8` |
+
+### DEBT-ORG-003 — Sales/Purch structure feature-pack gating (detail)
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | Organization (L5) + SaasPlatform feature catalog |
+| **2. Section** | Sales/Purch structure masters create paths (H3) |
+| **3. Reason** | Competitive sales/purch masters existed without sellable pack gates; L2 catalog was the prerequisite. |
+| **4. Layer type** | Backend + Frontend |
+| **5. Created at** | 2026-09-29 (track debt); formal close-out 2026-10-06 |
+| **6. Owner decision** | Independent packs `org.sales_structure` and `org.purch_structure`. Create blocked without entitlement (403). List/read remain available (freeze semantics). FE hub shows packHint; no full list rewrite. |
+| **7. Suggestion** | Optional: mirror same one-line assert into `SalesStructureService::create*` for defense-in-depth if callers bypass controller. |
+| **Status** | **CLOSED** — 2026-10-06 |
 
 ---
 
@@ -86,3 +100,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.0 | 2026-10-06 | Initial register |
 | 1.1 | 2026-10-06 | SAASADM-P0/P1 BE verified |
 | 1.2 | 2026-10-06 | SAASADM-P2–P7 closed; DEBT-SAAS-001/002 CLOSED; PLT-001/002 CLOSED; PLT-003 PARTIAL |
+| 1.3 | 2026-10-06 | DEBT-ORG-003 CLOSED (Sales/Purch pack gates + FE hub hint) |

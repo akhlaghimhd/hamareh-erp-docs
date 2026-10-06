@@ -16,6 +16,14 @@
 | P7 FE `/admin` shell | hamarehSaasErp-Front | CLOSED |
 | Dual-approval tenant settings formalization | hamarehSaasErp-Front | CLOSED |
 
+## Follow-on (post Layer 2)
+
+| Item | Status |
+|------|--------|
+| `erp:purge-soft-deleted` Org masters P0 | **SHIPPED** BE `53a6b8cc` (gated by `retention.purge_job_enabled`) |
+| Tenant retention UX on deleted buckets | OPEN (DEBT-ORG-007 residual FE) |
+| Identity list purge types | OPEN (DEBT-ID-003) |
+
 ## FE routes
 
 - `/admin/login` — platform admin auth  
@@ -31,10 +39,22 @@
 
 ## Still open (not Layer 2 blockers)
 
-- DEBT-PLT-003 / DEBT-ORG-007 / DEBT-ID-003 — soft-delete purge job + tenant retention UX  
+- DEBT-PLT-003 residual — tenant retention UX  
+- DEBT-ORG-007 residual FE — deleted-bucket messaging  
+- DEBT-ID-003 — Identity purge entities  
 - DEBT-ID-009 Holding H4/H5 product rules  
 - Optional P6 support/notifications  
 
 ## Local admin seed (APP_ENV=local)
 
 `platform.admin` / `LocalAdmin1!` (override with `PLATFORM_ADMIN_*` env in production)
+
+## Purge command
+
+```bash
+docker compose exec app php artisan erp:purge-soft-deleted
+# override gate:
+docker compose exec app php artisan erp:purge-soft-deleted --force
+```
+
+Scheduled daily 03:30; no-op unless `retention.purge_job_enabled=true` in system_settings.

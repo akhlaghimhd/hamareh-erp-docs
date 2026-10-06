@@ -3,12 +3,13 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-06T09:53:00+02:00  
+**Last updated:** 2026-10-06T11:00:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 **Related status docs (do not duplicate; link only):**
 - `05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ORG_Smart_Hierarchy_Status_and_Debt_v1.0.md`
 - `05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ORG_Intercompany_Status_and_Debt_v1.0.md`
 - `05_Identity_&_Master_Data_Layer/Layer_5_Master_Data_Tables/ORG_Sales_Purch_Status_and_Debt_v1.0.md`
+- `04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/ADR-SAASADM-001_Feature_Pack_Model_v1.0.md`
 
 ---
 
@@ -165,9 +166,9 @@ Every new debt entry **must** include all of the following fields, in this order
 | **3. Reason** | H1–H3 done on main (HoldingAccessService, scopes, search, delegated admin tests). H4/H5 depend on SaaS Admin feature catalog and pack upgrade/downgrade. |
 | **4. Layer type** | Architecture + Backend + SaaS Admin |
 | **5. Created at** | 2026-10-02; registered 2026-10-06T09:53:00+02:00 |
-| **6. Owner decision** | ثبت اولیه — BLOCKED until SaaS Admin |
-| **7. Suggestion** | Do not invent parallel pack tables in Identity. When SaaS Admin packs exist, wire Holding soft/hard paths to purchased flags. |
-| **Status** | BLOCKED |
+| **6. Owner decision** | 2026-10-06: L1 FeatureCatalog + entitlements live; Holding soft path remains until explicit H4/H5 product rules wired to packs. |
+| **7. Suggestion** | Wire Holding soft/hard paths to purchased flags via FeatureCatalogService; do not invent parallel pack tables in Identity. |
+| **Status** | PARTIAL — catalog/entitlement SoT exists (ADR-SAASADM-001); H4/H5 Holding product rules still open |
 
 ---
 
@@ -209,12 +210,12 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) |
 | **2. Section** | Smart Hierarchy — pack-driven structural trees |
-| **3. Reason** | Product law requires multi_company / multi_branch packs to drive hierarchy UX. SaaS Admin / Platform Owner feature catalog not productized. Today FE uses count heuristics. See ORG_Smart_Hierarchy_Status_and_Debt D1. |
-| **4. Layer type** | Architecture + Backend + Frontend (blocked on SaaS Admin) |
+| **3. Reason** | Product law requires multi_company / multi_branch packs to drive hierarchy UX. |
+| **4. Layer type** | Architecture + Backend + Frontend |
 | **5. Created at** | 2026-09-25; registered 2026-10-06T09:53:00+02:00 |
-| **6. Owner decision** | ثبت اولیه — BLOCKED on SaaS Admin |
-| **7. Suggestion** | On pack enable → ensureStructuralTrees; on disable → hide/freeze trees, never hard-delete. Replace FE tier heuristic with pack flags. Golden tests for upgrade/downgrade. |
-| **Status** | BLOCKED |
+| **6. Owner decision** | 2026-10-06: Backend freeze/unfreeze + create gates done (FeatureCatalogService + FeaturePackGateTest). Residual: FE hub cards + ensureStructuralTrees consumer on granted event. |
+| **7. Suggestion** | FE read enabled_codes from /feature-entitlements; on grant event ensureStructuralTrees; on freeze hide/freeze trees only. |
+| **Status** | PARTIAL — BE gate + freeze/unfreeze CLOSED; FE residual |
 
 ---
 
@@ -224,12 +225,12 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) |
 | **2. Section** | Smart Hierarchy — CUSTOM trees |
-| **3. Reason** | CUSTOM gated by env flags (`FEATURE_CUSTOM_ORG_HIERARCHY` / NEXT_PUBLIC_…). Must move to sellable pack independent of multi_company/multi_branch. Blocked on D1 platform. |
+| **3. Reason** | CUSTOM must be sellable pack independent of multi_company/multi_branch. |
 | **4. Layer type** | Architecture + Backend + Frontend |
 | **5. Created at** | 2026-09-25; registered 2026-10-06T09:53:00+02:00 |
-| **6. Owner decision** | ثبت اولیه — BLOCKED on SaaS Admin |
-| **7. Suggestion** | Replace env with purchased `custom_org_hierarchy`; do not enable by default for simple tenants. |
-| **Status** | BLOCKED |
+| **6. Owner decision** | 2026-10-06: Backend uses FeatureCatalogService::CODE_CUSTOM_ORG_HIERARCHY (assertEnabled on createHierarchy). Env gate removed from BE path. FE may still have NEXT_PUBLIC residual. |
+| **7. Suggestion** | Remove any remaining FE env fallback; gate hub card by enabled_codes. |
+| **Status** | CLOSED (BE) — FE residual tracked under DEBT-ORG-008 |
 
 ---
 
@@ -239,12 +240,12 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) |
 | **2. Section** | Sales / Purchasing structure |
-| **3. Reason** | Sales/Purch structure track closed for masters + H1–H2. H3 feature-pack gating parked until SaaS Admin. See ORG_Sales_Purch_Status_and_Debt. |
+| **3. Reason** | Sales/Purch structure track closed for masters + H1–H2. H3 feature-pack gating still needs explicit pack codes on create paths. |
 | **4. Layer type** | Backend + Frontend |
 | **5. Created at** | 2026-09-29; registered 2026-10-06T09:53:00+02:00 |
-| **6. Owner decision** | ثبت اولیه — BLOCKED on SaaS Admin |
+| **6. Owner decision** | ثبت اولیه — still needs explicit pack codes + assertEnabled on Sales/Purch create paths |
 | **7. Suggestion** | Gate hub cards and APIs by purchased packs; keep masters intact when pack off. |
-| **Status** | BLOCKED |
+| **Status** | OPEN |
 
 ---
 
@@ -269,11 +270,11 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) + Accounting / Sales |
 | **2. Section** | Intercompany post–P1 |
-| **3. Reason** | Org-IC-P1 CLOSED (partners/rules). Acc-IC and Ops-IC parked until GL and SO/PO exist. Full list in ORG_Intercompany_Status_and_Debt_v1.0 (IC-D-ACC-*, IC-D-OPS-*, IC-D-PLT-01). |
+| **3. Reason** | Org-IC-P1 CLOSED (partners/rules). Acc-IC and Ops-IC parked until GL and SO/PO exist. |
 | **4. Layer type** | Architecture + Backend (future modules) |
 | **5. Created at** | 2026-09-28; registered 2026-10-06T09:53:00+02:00 |
 | **6. Owner decision** | ثبت اولیه — PARKED; do not re-open Org IC tables |
-| **7. Suggestion** | Resume only with Accounting GL green; implement Acc-IC against existing partner map; enforce `org.intercompany` pack when Platform ready. |
+| **7. Suggestion** | Resume only with Accounting GL green; implement Acc-IC against existing partner map; enforce `org.intercompany` pack (already gated on IC rule create). |
 | **Status** | DEFERRED |
 
 ---
@@ -314,12 +315,12 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) + SaaS Admin |
 | **2. Section** | Feature packs runtime (multi_company, multi_branch, multi_business_unit, org.intercompany, …) |
-| **3. Reason** | Product law locked: every Org UI/API surface must gate by purchased flags. Implicit single-company + HQ branch path without packs. Enforcement still Platform. |
+| **3. Reason** | Product law locked: every Org UI/API surface must gate by purchased flags. |
 | **4. Layer type** | Backend + Frontend + Architecture |
 | **5. Created at** | 2026-09-25; registered 2026-10-06T09:53:00+02:00 |
-| **6. Owner decision** | ثبت اولیه — BLOCKED on SaaS Admin catalog |
-| **7. Suggestion** | Central FeaturePackGate (already partially tested in PLT-W1-02); wire all Org list/create routes and hub cards. |
-| **Status** | BLOCKED |
+| **6. Owner decision** | 2026-10-06: BE create paths gated (CompanyService, BranchService, BusinessUnitService, OrgHierarchyService, IntercompanyService) + FeaturePackGateTest green. Residual: FE hub cards hide/show from enabled_codes. |
+| **7. Suggestion** | FE: read GET /feature-entitlements; hide hub cards when pack off. |
+| **Status** | PARTIAL — BE CLOSED; FE residual |
 
 ---
 
@@ -344,7 +345,7 @@ Every new debt entry **must** include all of the following fields, in this order
 |-------|--------|
 | **1. Module** | Organization (L5) Front |
 | **2. Section** | Company/Branch detail UX |
-| **3. Reason** | Full company-detail UI (branches/depts tables) temporarily simplified on develop; restore rich panels from prior when capacity allows. Branches/departments list may still need CompanyDetailLink wiring. FE URL law for non-company details. |
+| **3. Reason** | Full company-detail UI temporarily simplified on develop; restore rich panels from prior when capacity allows. |
 | **4. Layer type** | Frontend |
 | **5. Created at** | 2026-10-05; registered 2026-10-06T09:53:00+02:00 |
 | **6. Owner decision** | ثبت اولیه — restore from git history preferred over rewrite (UI safety law) |
@@ -372,9 +373,9 @@ Every new debt entry **must** include all of the following fields, in this order
 
 | Debt ID | Title | Blocks | Status |
 |---------|-------|--------|--------|
-| DEBT-PLT-001 | SaaS Admin feature catalog + pack purchase API | DEBT-ID-009, DEBT-ORG-001/002/003/008 | OPEN (L2 not started) |
-| DEBT-PLT-002 | System settings page (move identity-only dual-approval toggle) | DEBT-ID-002 residual | OPEN |
-| DEBT-PLT-003 | Tenant retention setting UI (global) | DEBT-ID-003, DEBT-ORG-007 | OPEN |
+| DEBT-PLT-001 | SaaS Admin feature catalog + pack purchase API | DEBT-ID-009, DEBT-ORG-001/002/003/008 | **PARTIAL/CLOSED BE** — L1 FeatureCatalogService + APIs + outbox live (ADR-SAASADM-001). Admin UX shell still open (SAASADM-P2/P7). |
+| DEBT-PLT-002 | System settings page (move identity-only dual-approval toggle) | DEBT-ID-002 residual | OPEN — SAASADM-P3 |
+| DEBT-PLT-003 | Tenant retention setting UI (global) | DEBT-ID-003, DEBT-ORG-007 | OPEN — SAASADM-P3 |
 
 ---
 
@@ -395,7 +396,7 @@ Use this when deciding to **seal L4 / L5 foundation**:
 - [ ] DEBT-ORG-009 only if load issues observed
 
 **Explicitly NOT required to seal (blocked/deferred):**
-- All BLOCKED on SaaS Admin (D1/D7/H3/packs/H4–H5)
+- FE residual of packs (hub cards) — can ship after Admin shell
 - Intercompany Acc/Ops, Sales consumers, SSO/SCIM, optional FE polish
 
 ---
@@ -405,3 +406,4 @@ Use this when deciding to **seal L4 / L5 foundation**:
 | Version | Date | Notes |
 |---------|------|-------|
 | 1.0 | 2026-10-06 | Initial register: remaining L4 Identity + L5 Organization debts from status report; register law locked |
+| 1.1 | 2026-10-06 | SAASADM-P0/P1 BE verified: FeatureCatalog + Org gates + tests; DEBT-ORG-002 CLOSED (BE); ORG-001/008/ID-009 PARTIAL; PLT-001 PARTIAL |

@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-06T20:55:00+02:00  
+**Last updated:** 2026-10-12T20:15:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8` (`git show cf30dd8:02_System_Blueprint_&_Roadmaps/Project_Debt_Register_v1.0.md`). This index carries current SAASADM close-out + live status for platform debts.
@@ -11,6 +11,8 @@
 **Related:**
 - `04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/SAASADM_BE_Closeout_P0-P5_2026-10-06.md`
 - `04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/ADR-SAASADM-001_Feature_Pack_Model_v1.0.md`
+- `06_Vertical_ERP_Modules/04_Financial_Accounting/ADR-FIN-002_Company_Scope_Access_and_Document_Numbering_v1.0.md`
+- `06_Vertical_ERP_Modules/04_Financial_Accounting/ADR-FIN-002_Implementation_Status_v1.0.md`
 
 ---
 
@@ -93,6 +95,55 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 
 ---
 
+## F. Financial Accounting — ADR-FIN-002 (FIN-CSN) residuals
+
+| Debt ID | Title | Status |
+|---------|-------|--------|
+| DEBT-FIN-CSN-001 | CoA per-company isolation | **DEFERRED** — product keeps tenant-level CoA |
+| DEBT-FIN-CSN-002 | Multi-process sequence race beyond lockForUpdate | **CLOSED** — sequential test + row lock; OS parallel out of PHPUnit scope |
+| DEBT-FIN-CSN-003 | FE company selector consistency on report surfaces | **CLOSED** — `useFinanceCompanyScope` + reports / tax / period-close |
+
+### DEBT-FIN-CSN-001 — CoA per-company (detail)
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting |
+| **2. Section** | Chart of Accounts (F2-02) |
+| **3. Reason** | ADR matrix listed CoA access ∩ company policy; current CoA has no `company_id` (tenant shared tree). |
+| **4. Layer type** | Architecture / Backend |
+| **5. Created at** | 2026-10-12T18:00:00+02:00 |
+| **6. Owner decision** | Keep tenant-level CoA until explicit product ADR change. Scope on journals/reports is sufficient for legal-entity isolation. |
+| **7. Suggestion** | If per-company CoA is required later: new ADR amendment + migration `company_id` + uniqueness per company. |
+| **Status** | **DEFERRED** |
+
+### DEBT-FIN-CSN-002 — Sequence concurrency (detail)
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting |
+| **2. Section** | `fin_document_sequences` / JournalEntryService |
+| **3. Reason** | F3-01 required concurrency proof; PHPUnit cannot safely simulate true multi-process. |
+| **4. Layer type** | Backend |
+| **5. Created at** | 2026-10-12T18:00:00+02:00 |
+| **6. Owner decision** | `lockForUpdate` inside transaction + `DocumentSequenceConcurrencyTest` sequential uniqueness accepted as ADR close criterion. |
+| **7. Suggestion** | Optional load test outside PHPUnit if production contention appears. |
+| **Status** | **CLOSED** — 2026-10-12 |
+
+### DEBT-FIN-CSN-003 — FE report company UX (detail)
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting Front |
+| **2. Section** | reports / tax-reports / period-close company filter |
+| **3. Reason** | ADR L01–L02 required consistent company selector; some pages only defaulted primary without shared helper. |
+| **4. Layer type** | Frontend |
+| **5. Created at** | 2026-10-12T18:00:00+02:00 |
+| **6. Owner decision** | Shared `useFinanceCompanyScope`; multi → selector; single → fixed label; wired on reports, tax-reports, period-close. Other FIN pages may adopt same hook when touched. |
+| **7. Suggestion** | Apply hook to treasury/open-items/fixed-assets when next UX pass. |
+| **Status** | **CLOSED** — 2026-10-12 |
+
+---
+
 ## Document control
 
 | Version | Date | Notes |
@@ -101,3 +152,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.1 | 2026-10-06 | SAASADM-P0/P1 BE verified |
 | 1.2 | 2026-10-06 | SAASADM-P2–P7 closed; DEBT-SAAS-001/002 CLOSED; PLT-001/002 CLOSED; PLT-003 PARTIAL |
 | 1.3 | 2026-10-06 | DEBT-ORG-003 CLOSED (Sales/Purch pack gates + FE hub hint) |
+| 1.4 | 2026-10-12 | DEBT-FIN-CSN-001 DEFERRED; 002/003 CLOSED; ADR-FIN-002 implementation close-out |

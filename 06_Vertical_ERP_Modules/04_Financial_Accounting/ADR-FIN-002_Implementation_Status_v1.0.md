@@ -10,10 +10,10 @@
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| **F0** Foundation BE | **DONE** | `FinanceCompanyScope`, sequences, DR/JE, JournalEntryService Scope, unique series per company |
-| **F1** Journals FE | **DONE** | Multi-company filter/form, `displayJournalNumber` (DR-05 / JE-05), bulk, reverse link |
-| **F2** Other FIN services | **DONE (service layer)** | Ledger, Period, Bank, Tax, TB, OpenItem, FA, Consol, Treasury, IC. CoA remains **tenant-level** (no `company_id`) by existing FIN law — F2-02 N/A until product change |
-| **F3** Hardening | **IN PROGRESS** | F3-01 sequence sequential test added; D7 SME primary-only; D6 FY from `fin_fiscal_periods` when table exists else doc date |
+| **F0** Foundation BE | **DONE** | `FinanceCompanyScope`, sequences, DR/JE, JournalEntryService Scope |
+| **F1** Journals FE | **DONE** | Multi-company, `displayJournalNumber` DR-05/JE-05 |
+| **F2** Other FIN | **DONE (service + HTTP)** | Services scoped; controllers require `company_id` and delegate to services (Journal, Report, Period, Bank, Tax, Treasury, IC, …). **CoA** remains tenant-level (no `company_id`) — product law, not a gap in Scope helper |
+| **F3** Hardening | **DONE (core)** | D7 SME primary-only; D6 FY from `fin_fiscal_periods` if present else doc date; F3-01 sequential sequence test; holding matrix test |
 
 ---
 
@@ -21,26 +21,38 @@
 
 | ID | Status |
 |----|--------|
-| D2–D5, D8–D10 | Implemented |
-| **D6** | Implemented with **fallback**: period table if present; else document-date Jalali year |
-| **D7** | Implemented: non-owner + empty COMPANY scopes → **primary company only**; `is_owner` → group-wide; no security context → group-wide (tests/CLI) |
+| D2–D5, D8–D10 | Done |
+| **D6** | Done with fallback (period table → else document date Jalali year) |
+| **D7** | Done: non-owner + empty COMPANY scopes → primary only; `is_owner` → group-wide |
 
 ---
 
-## Residual (honest)
+## Acceptance (ADR §11)
 
-1. **HTTP/Controller layer** for non-journal FIN surfaces may still need explicit company filter params where routes are thin.
-2. **True parallel concurrency** (multi-process) not simulated in PHPUnit — sequential uniqueness under `lockForUpdate` is covered.
-3. **CoA per-company** only if product changes F2-02.
-4. When `fin_fiscal_periods` is fully seeded, D6 path becomes primary automatically.
+| Criterion | Status |
+|-----------|--------|
+| Parent Scope {A,B} lists only A+B | Covered at service + tests |
+| Child Scope {B} cannot access A | `FinanceCompanyScopeHoldingTest` |
+| DR/JE per company; A and B can share same sequence text | `JournalCompanyScopeNumberingTest` |
+| SME soft path primary only | `sme_without_company_scope_only_primary_company` |
+| Shared helper journals + other services | Yes |
+| UI company selection (journals) | F1 done |
 
 ---
 
-## Key tests
+## Explicit residuals (not blockers for ADR close)
+
+1. **CoA per-company** — only if product changes F2-02.
+2. **True multi-process race** on sequences — sequential + `lockForUpdate` covered; OS-level parallel not in PHPUnit.
+3. **FE company filter** on every non-journal report page — follow same journals pattern when those UIs are touched.
+
+---
+
+## Key tests (develop)
 
 - `JournalCompanyScopeNumberingTest`
-- `FinanceCompanyScopeHoldingTest` (sibling deny, owner both, SME primary)
+- `FinanceCompanyScopeHoldingTest`
 - `DocumentSequenceConcurrencyTest`
 - `LedgerServiceScopeTest`
 
-Cite: **ADR-FIN-002** / **FIN-CSN-*** / this status file.
+Cite: **ADR-FIN-002** / **FIN-CSN-*** / this file.

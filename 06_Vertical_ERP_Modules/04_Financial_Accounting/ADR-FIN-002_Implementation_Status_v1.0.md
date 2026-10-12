@@ -1,45 +1,37 @@
 # ADR-FIN-002 — Implementation Status (FIN-CSN)
 
-**Status:** **CLOSED** for coded ADR scope (2026-10-12)  
-**Code branches:** `hamarehSaasErp` / `hamarehSaasErp-Front` → `develop`  
-**ADR:** `ADR-FIN-002_Company_Scope_Access_and_Document_Numbering_v1.0.md`  
-**Debt:** `DEBT-FIN-CSN-001` DEFERRED (CoA); `002`/`003` CLOSED
+**Status:** **CLOSED** for coded ADR scope + failure-point remediation (2026-10-12)  
+**Code:** `hamarehSaasErp` / `hamarehSaasErp-Front` `develop`
 
 ---
 
-## Phase status
+## Failure points closed this pass
+
+| Issue | Fix |
+|-------|-----|
+| `ChequeService` no Scope | `assertCanAccessCompany` on create/transition + scoped `list` + controller |
+| Consol TB leaked tree companies outside Scope | `operatingDescendants ∩ allowedCompanyIds` when not group-wide |
+| Cheques FE only primary | `useFinanceCompanyScope` multi-company filter/create |
+
+Test: `ChequeCompanyScopeTest`
+
+---
+
+## Still product-deferred (not a silent leak)
+
+| Item | Note |
+|------|------|
+| CoA per-company | DEBT-FIN-CSN-001 DEFERRED |
+| Treasury / open-items / FA FE selector | BE already scoped; FE still defaults primary until same hook applied (no cross-company write without backend deny) |
+| Branch-level journal series | Out of ADR scope (D8) |
+
+---
+
+## Phases F0–F3
 
 | Phase | Status |
 |-------|--------|
-| **F0** Foundation BE | **CLOSED** |
-| **F1** Journals FE | **CLOSED** |
-| **F2** Module services + HTTP | **CLOSED** (CoA tenant-level by product) |
-| **F3** Hardening | **CLOSED** (D6/D7 + tests + FE report company helper) |
+| F0–F3 core | CLOSED |
+| Cheque + Consol harden | CLOSED |
 
----
-
-## Decisions
-
-| ID | Status |
-|----|--------|
-| D2–D5, D8–D10 | Done |
-| D6 FY | Period table if present, else document date |
-| D7 SME | Primary company only when no COMPANY scopes |
-
----
-
-## FE helper
-
-`src/modules/finance/hooks/use-finance-company-scope.ts`  
-Used by: reports, tax-reports, period-close (journals already had multi-company UX).
-
----
-
-## Tests
-
-- `JournalCompanyScopeNumberingTest`
-- `FinanceCompanyScopeHoldingTest`
-- `DocumentSequenceConcurrencyTest`
-- `LedgerServiceScopeTest`
-
-Cite: **ADR-FIN-002** / **FIN-CSN-*** / this file.
+Cite: **ADR-FIN-002** / **FIN-CSN-***

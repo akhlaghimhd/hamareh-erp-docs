@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-12T20:15:00+02:00  
+**Last updated:** 2026-10-14T06:40:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8` (`git show cf30dd8:02_System_Blueprint_&_Roadmaps/Project_Debt_Register_v1.0.md`). This index carries current SAASADM close-out + live status for platform debts.
@@ -31,6 +31,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-PLT-001 | SaaS Admin feature catalog + pack purchase API | **CLOSED** — L1 FeatureCatalog + admin APIs + FE `/admin` shell |
 | DEBT-PLT-002 | Dual-approval tenant settings UI | **CLOSED** — formal Identity tenant settings (`/dashboard/identity/settings`); dual-approval stays in `tenant_settings` |
 | DEBT-PLT-003 | Tenant retention setting UI + purge job | **PARTIAL** — platform `retention.*` keys seeded; purge job Org masters P0 shipped; tenant override UX still OPEN |
+| **DEBT-ORG-012** | **Org hierarchy depth limits in Feature Pack / Platform Owner** | **OPEN** — reminder: define max company/branch tree depth per pack when touching SaaS Admin feature packs |
 
 ---
 
@@ -76,6 +77,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-ORG-002 | CLOSED (BE) |
 | **DEBT-ORG-003** | **CLOSED** — 2026-10-06: packs `org.sales_structure` / `org.purch_structure`; create gated on SalesOrg/PurchOrg services + SalesStructureController store*; FE hub packHint; tests `SalesPurchFeaturePackGateTest` |
 | DEBT-ORG-008 | PARTIAL — BE CLOSED; hub shows pack hints |
+| **DEBT-ORG-012** | **OPEN** — Org hierarchy max depth via Feature Pack / Platform Owner (see detail) |
 | DEBT-ID-009 | PARTIAL — catalog SoT exists; Holding H4/H5 product rules open |
 | DEBT-ID-001…008, 010–011 | See full tables at `cf30dd8` |
 | DEBT-ORG-004…011 | See full tables at `cf30dd8` |
@@ -92,6 +94,19 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **6. Owner decision** | Independent packs `org.sales_structure` and `org.purch_structure`. Create blocked without entitlement (403). List/read remain available (freeze semantics). FE hub shows packHint; no full list rewrite. |
 | **7. Suggestion** | Optional: mirror same one-line assert into `SalesStructureService::create*` for defense-in-depth if callers bypass controller. |
 | **Status** | **CLOSED** — 2026-10-06 |
+
+### DEBT-ORG-012 — Org hierarchy depth limits (Feature Pack / Platform Owner)
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | Organization (L5) + SaasAdmin (L2) Feature Pack catalog |
+| **2. Section** | Platform Owner entitlement — max depth of company tree / branch tree a tenant may create |
+| **3. Reason** | Org model already supports multi-level company (`parent_company_id`) and nested branch (`parent_branch_id`). Product intent: future customers are mid-size holdings, not mega on-prem groups; depth must be **sellable/limitable** from Platform Owner / feature packs so a tenant cannot grow an unbounded org tree unless the purchased pack allows it. Owner asked (2026-10-14) to defer detailed design until SaaS Admin feature-pack work, but **must not forget**. |
+| **4. Layer type** | Architecture + Backend (Platform Owner / Feature Pack) + Organization create guards |
+| **5. Created at** | 2026-10-14T06:40:00+02:00 |
+| **6. Owner decision** | **OPEN / reminder only for now.** When Feature Pack catalog is next refined: define explicit limits (e.g. max company depth, max branch depth, max children per parent) per pack tier; enforce on Organization create APIs. Not blocking current FIN access-law design under “full pack purchased” assumption. |
+| **7. Suggestion** | (1) Add pack keys e.g. `org.company_depth_max`, `org.branch_depth_max` or tiered packs. (2) Gate `CompanyService` / `BranchService` create with depth-from-root check. (3) Platform Owner UI to set or inherit limits. (4) Document in ADR-SAASADM-001 amendment. |
+| **Status** | **OPEN** |
 
 ---
 
@@ -153,3 +168,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.2 | 2026-10-06 | SAASADM-P2–P7 closed; DEBT-SAAS-001/002 CLOSED; PLT-001/002 CLOSED; PLT-003 PARTIAL |
 | 1.3 | 2026-10-06 | DEBT-ORG-003 CLOSED (Sales/Purch pack gates + FE hub hint) |
 | 1.4 | 2026-10-12 | DEBT-FIN-CSN-001 DEFERRED; 002/003 CLOSED; ADR-FIN-002 implementation close-out |
+| 1.5 | 2026-10-14 | **DEBT-ORG-012 OPEN** — org company/branch depth limits via Feature Pack / Platform Owner (owner reminder) |

@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-14T06:40:00+02:00  
+**Last updated:** 2026-10-14T07:15:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8` (`git show cf30dd8:02_System_Blueprint_&_Roadmaps/Project_Debt_Register_v1.0.md`). This index carries current SAASADM close-out + live status for platform debts.
@@ -13,6 +13,7 @@
 - `04_SaaS_Core_Platform_Layers/Layer_2_SaaS_Admin/ADR-SAASADM-001_Feature_Pack_Model_v1.0.md`
 - `06_Vertical_ERP_Modules/04_Financial_Accounting/ADR-FIN-002_Company_Scope_Access_and_Document_Numbering_v1.0.md`
 - `06_Vertical_ERP_Modules/04_Financial_Accounting/ADR-FIN-002_Implementation_Status_v1.0.md`
+- `06_Vertical_ERP_Modules/04_Financial_Accounting/ADR-FIN-003_Holding_Company_Access_and_Document_Isolation_Laws_v1.0.md`
 
 ---
 
@@ -75,9 +76,9 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |---------|--------|
 | DEBT-ORG-001 | PARTIAL — BE CLOSED; FE hub hints via enabled_codes |
 | DEBT-ORG-002 | CLOSED (BE) |
-| **DEBT-ORG-003** | **CLOSED** — 2026-10-06: packs `org.sales_structure` / `org.purch_structure`; create gated on SalesOrg/PurchOrg services + SalesStructureController store*; FE hub packHint; tests `SalesPurchFeaturePackGateTest` |
+| **DEBT-ORG-003** | **CLOSED** — 2026-10-06 |
 | DEBT-ORG-008 | PARTIAL — BE CLOSED; hub shows pack hints |
-| **DEBT-ORG-012** | **OPEN** — Org hierarchy max depth via Feature Pack / Platform Owner (see detail) |
+| **DEBT-ORG-012** | **OPEN** — Org hierarchy max depth via Feature Pack / Platform Owner |
 | DEBT-ID-009 | PARTIAL — catalog SoT exists; Holding H4/H5 product rules open |
 | DEBT-ID-001…008, 010–011 | See full tables at `cf30dd8` |
 | DEBT-ORG-004…011 | See full tables at `cf30dd8` |
@@ -101,35 +102,77 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |-------|--------|
 | **1. Module** | Organization (L5) + SaasAdmin (L2) Feature Pack catalog |
 | **2. Section** | Platform Owner entitlement — max depth of company tree / branch tree a tenant may create |
-| **3. Reason** | Org model already supports multi-level company (`parent_company_id`) and nested branch (`parent_branch_id`). Product intent: future customers are mid-size holdings, not mega on-prem groups; depth must be **sellable/limitable** from Platform Owner / feature packs so a tenant cannot grow an unbounded org tree unless the purchased pack allows it. Owner asked (2026-10-14) to defer detailed design until SaaS Admin feature-pack work, but **must not forget**. |
-| **4. Layer type** | Architecture + Backend (Platform Owner / Feature Pack) + Organization create guards |
+| **3. Reason** | Org model supports multi-level company and nested branch; mid-size SaaS customers need sellable depth caps. |
+| **4. Layer type** | Architecture + Backend + Organization create guards |
 | **5. Created at** | 2026-10-14T06:40:00+02:00 |
-| **6. Owner decision** | **OPEN / reminder only for now.** When Feature Pack catalog is next refined: define explicit limits (e.g. max company depth, max branch depth, max children per parent) per pack tier; enforce on Organization create APIs. Not blocking current FIN access-law design under “full pack purchased” assumption. |
-| **7. Suggestion** | (1) Add pack keys e.g. `org.company_depth_max`, `org.branch_depth_max` or tiered packs. (2) Gate `CompanyService` / `BranchService` create with depth-from-root check. (3) Platform Owner UI to set or inherit limits. (4) Document in ADR-SAASADM-001 amendment. |
+| **6. Owner decision** | OPEN until Feature Pack catalog refinement; see ADR-FIN-003 L16. |
+| **7. Suggestion** | Pack keys for max company/branch depth; gate CompanyService/BranchService create. |
 | **Status** | **OPEN** |
 
 ---
 
-## F. Financial Accounting — ADR-FIN-002 (FIN-CSN) residuals
+## F. Financial Accounting — ADR-FIN-002 / ADR-FIN-003
 
 | Debt ID | Title | Status |
 |---------|-------|--------|
-| DEBT-FIN-CSN-001 | CoA per-company isolation | **DEFERRED** — product keeps tenant-level CoA |
-| DEBT-FIN-CSN-002 | Multi-process sequence race beyond lockForUpdate | **CLOSED** — sequential test + row lock; OS parallel out of PHPUnit scope |
-| DEBT-FIN-CSN-003 | FE company selector consistency on report surfaces | **CLOSED** — `useFinanceCompanyScope` + reports / tax / period-close |
+| DEBT-FIN-CSN-001 | CoA per-company isolation | **OPEN** — product locked per-company in ADR-FIN-003 L09 (was DEFERRED tenant-shared) |
+| DEBT-FIN-CSN-002 | Multi-process sequence race beyond lockForUpdate | **CLOSED** |
+| DEBT-FIN-CSN-003 | FE company selector consistency on report surfaces | **CLOSED** |
+| **DEBT-FIN-HOLD-001** | Split group **read** vs company **operate** write | **OPEN** — ADR-FIN-003 L01–L03, L06; `is_owner` must not auto-write all companies |
+| **DEBT-FIN-HOLD-002** | Group observer role + parent grant of read scope | **OPEN** — ADR-FIN-003 L02, L05, L06 |
+| **DEBT-FIN-HOLD-003** | Optional branch document series from fiscal year start | **OPEN** — ADR-FIN-003 L07, L10 |
 
 ### DEBT-FIN-CSN-001 — CoA per-company (detail)
 
 | Field | Value |
 |-------|--------|
 | **1. Module** | FinancialAccounting |
-| **2. Section** | Chart of Accounts (F2-02) |
-| **3. Reason** | ADR matrix listed CoA access ∩ company policy; current CoA has no `company_id` (tenant shared tree). |
-| **4. Layer type** | Architecture / Backend |
+| **2. Section** | Chart of Accounts |
+| **3. Reason** | ADR-FIN-003 L09 locks CoA per company; code still tenant-shared. |
+| **4. Layer type** | Architecture / Backend / Frontend |
 | **5. Created at** | 2026-10-12T18:00:00+02:00 |
-| **6. Owner decision** | Keep tenant-level CoA until explicit product ADR change. Scope on journals/reports is sufficient for legal-entity isolation. |
-| **7. Suggestion** | If per-company CoA is required later: new ADR amendment + migration `company_id` + uniqueness per company. |
-| **Status** | **DEFERRED** |
+| **6. Owner decision** | **Per company** (2026-10-14). Implement migration + uniqueness per company. |
+| **7. Suggestion** | Migration strategy: assign existing tree to primary company then clone for siblings, or explicit company_id + backfill. |
+| **Status** | **OPEN** |
+
+### DEBT-FIN-HOLD-001 — Read vs operate split
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting + IdentityCore |
+| **2. Section** | FinanceCompanyScope / all FIN write services |
+| **3. Reason** | Owner locked: holding may view/filter subsidiary data but must not post/edit child books; current is_owner group-wide write violates this. |
+| **4. Layer type** | Backend (then FE) |
+| **5. Created at** | 2026-10-14T07:15:00+02:00 |
+| **6. Owner decision** | Implement assertCanReadCompany vs assertCanOperateCompany; fix journals and all FIN modules. |
+| **7. Suggestion** | Wave W1 in ADR-FIN-003 §4. |
+| **Status** | **OPEN** |
+
+### DEBT-FIN-HOLD-002 — Group observer role
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | IdentityCore + Front |
+| **2. Section** | Permissions / roles / grant UI |
+| **3. Reason** | L02 requires explicit group read capability granted by parent, not flat owner power. |
+| **4. Layer type** | Backend + Frontend |
+| **5. Created at** | 2026-10-14T07:15:00+02:00 |
+| **6. Owner decision** | New permission(s) + role surface; parent assigns observe scope. |
+| **7. Suggestion** | Wave W0 in ADR-FIN-003 §4. |
+| **Status** | **OPEN** |
+
+### DEBT-FIN-HOLD-003 — Branch series optional from fiscal year
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting |
+| **2. Section** | Document sequences + company finance settings |
+| **3. Reason** | L07: default company series; optional branch series from start of fiscal year only; company-level docs without branch keep company series. |
+| **4. Layer type** | Backend + Frontend |
+| **5. Created at** | 2026-10-14T07:15:00+02:00 |
+| **6. Owner decision** | Setting per company; no mid-period switch. |
+| **7. Suggestion** | Wave W3 in ADR-FIN-003 §4. |
+| **Status** | **OPEN** |
 
 ### DEBT-FIN-CSN-002 — Sequence concurrency (detail)
 
@@ -137,11 +180,11 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |-------|--------|
 | **1. Module** | FinancialAccounting |
 | **2. Section** | `fin_document_sequences` / JournalEntryService |
-| **3. Reason** | F3-01 required concurrency proof; PHPUnit cannot safely simulate true multi-process. |
+| **3. Reason** | F3-01 concurrency proof. |
 | **4. Layer type** | Backend |
 | **5. Created at** | 2026-10-12T18:00:00+02:00 |
-| **6. Owner decision** | `lockForUpdate` inside transaction + `DocumentSequenceConcurrencyTest` sequential uniqueness accepted as ADR close criterion. |
-| **7. Suggestion** | Optional load test outside PHPUnit if production contention appears. |
+| **6. Owner decision** | lockForUpdate + sequential test accepted. |
+| **7. Suggestion** | Optional load test outside PHPUnit. |
 | **Status** | **CLOSED** — 2026-10-12 |
 
 ### DEBT-FIN-CSN-003 — FE report company UX (detail)
@@ -149,12 +192,12 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | Field | Value |
 |-------|--------|
 | **1. Module** | FinancialAccounting Front |
-| **2. Section** | reports / tax-reports / period-close company filter |
-| **3. Reason** | ADR L01–L02 required consistent company selector; some pages only defaulted primary without shared helper. |
+| **2. Section** | reports / tax-reports / period-close |
+| **3. Reason** | Consistent company selector. |
 | **4. Layer type** | Frontend |
 | **5. Created at** | 2026-10-12T18:00:00+02:00 |
-| **6. Owner decision** | Shared `useFinanceCompanyScope`; multi → selector; single → fixed label; wired on reports, tax-reports, period-close. Other FIN pages may adopt same hook when touched. |
-| **7. Suggestion** | Apply hook to treasury/open-items/fixed-assets when next UX pass. |
+| **6. Owner decision** | useFinanceCompanyScope shipped on key report pages. |
+| **7. Suggestion** | Align with operate vs read scope when HOLD-001 lands. |
 | **Status** | **CLOSED** — 2026-10-12 |
 
 ---
@@ -165,7 +208,8 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |---------|------|-------|
 | 1.0 | 2026-10-06 | Initial register |
 | 1.1 | 2026-10-06 | SAASADM-P0/P1 BE verified |
-| 1.2 | 2026-10-06 | SAASADM-P2–P7 closed; DEBT-SAAS-001/002 CLOSED; PLT-001/002 CLOSED; PLT-003 PARTIAL |
-| 1.3 | 2026-10-06 | DEBT-ORG-003 CLOSED (Sales/Purch pack gates + FE hub hint) |
-| 1.4 | 2026-10-12 | DEBT-FIN-CSN-001 DEFERRED; 002/003 CLOSED; ADR-FIN-002 implementation close-out |
-| 1.5 | 2026-10-14 | **DEBT-ORG-012 OPEN** — org company/branch depth limits via Feature Pack / Platform Owner (owner reminder) |
+| 1.2 | 2026-10-06 | SAASADM-P2–P7 closed |
+| 1.3 | 2026-10-06 | DEBT-ORG-003 CLOSED |
+| 1.4 | 2026-10-12 | DEBT-FIN-CSN close-out |
+| 1.5 | 2026-10-14 | DEBT-ORG-012 OPEN |
+| 1.6 | 2026-10-14 | **ADR-FIN-003 locked**; DEBT-FIN-HOLD-001/002/003 OPEN; DEBT-FIN-CSN-001 → OPEN (per-company CoA) |

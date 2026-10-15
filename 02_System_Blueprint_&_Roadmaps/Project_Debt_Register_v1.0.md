@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-14T07:30:00+02:00  
+**Last updated:** 2026-10-15T11:30:00+02:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8`.
@@ -47,10 +47,10 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-ORG-008 | PARTIAL |
 | **DEBT-ORG-012** | **OPEN** — depth caps via pack |
 | DEBT-ID-009 | PARTIAL |
-| **DEBT-ID-H01** | **OPEN** — Holding Identity power boundary (ADR-ID-ORG-004 G01–G04) |
-| **DEBT-ID-H02** | **OPEN** — Group observer + role catalog ceilings (G05, G15–G17) |
-| **DEBT-ID-H03** | **OPEN** — Child company admin completeness (G06–G08, G10, G25) |
-| **DEBT-ID-H04** | **OPEN** — Branch as Identity admin unit (G09, G14) |
+| **DEBT-ID-H01** | **CLOSED** — Wave 0 IDORG-T01–T04 delivered on develop |
+| **DEBT-ID-H02** | **CLOSED** — Wave 1 IDORG-T05–T09 delivered on develop |
+| **DEBT-ID-H03** | **CLOSED** — Wave 2 IDORG-T10–T14 delivered on develop |
+| **DEBT-ID-H04** | **CLOSED** — Wave 3 IDORG-T15–T17 branch admin delivered on develop |
 
 ### DEBT-ORG-012 — Org hierarchy depth limits
 
@@ -76,7 +76,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14T07:30:00+02:00 |
 | **6. Owner decision** | Accepted remediation G01–G04 in ADR-ID-ORG-004 |
 | **7. Suggestion** | Wave 0 tasks IDORG-T01–T04 |
-| **Status** | **OPEN** |
+| **Status** | **CLOSED** (2026-10-15) — T01–T04 on develop; tests HoldingAccessServiceTest green |
 
 ### DEBT-ID-H02 — Group observer and catalog shape
 
@@ -89,7 +89,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14T07:30:00+02:00 |
 | **6. Owner decision** | G05, G15–G17 accepted |
 | **7. Suggestion** | Wave 1 IDORG-T05–T09 (shared with FIN-HOLD-W0) |
-| **Status** | **OPEN** |
+| **Status** | **CLOSED** (2026-10-15) — T05–T09 delivered |
 
 ### DEBT-ID-H03 — Child company delegated admin completeness
 
@@ -102,7 +102,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14T07:30:00+02:00 |
 | **6. Owner decision** | G06–G08, G10, G25 accepted |
 | **7. Suggestion** | Wave 2 IDORG-T10–T14 |
-| **Status** | **OPEN** |
+| **Status** | **CLOSED** (2026-10-15) — T10–T14 delivered |
 
 ### DEBT-ID-H04 — Branch as Identity admin unit
 
@@ -115,7 +115,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14T07:30:00+02:00 |
 | **6. Owner decision** | G09, G14 accepted — implement or explicit non-goal after Wave 3 decision |
 | **7. Suggestion** | Wave 3 IDORG-T15–T17 |
-| **Status** | **OPEN** |
+| **Status** | **CLOSED** (2026-10-15) — T15–T17 branch admin on develop |
 
 ---
 
@@ -126,11 +126,48 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-FIN-CSN-001 | CoA per-company isolation | **OPEN** |
 | DEBT-FIN-CSN-002 | Sequence concurrency | **CLOSED** |
 | DEBT-FIN-CSN-003 | FE report company UX | **CLOSED** |
-| DEBT-FIN-HOLD-001 | Read vs operate split | **OPEN** |
-| DEBT-FIN-HOLD-002 | Group observer role + grant | **OPEN** |
+| DEBT-FIN-HOLD-001 | Read vs operate split | **CLOSED** |
+| DEBT-FIN-HOLD-002 | Group observer role + grant | **PARTIAL** |
 | DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **OPEN** |
 
-Detail tables for FIN debts: see register history / prior sections in git; status above is authoritative index.
+### DEBT-FIN-HOLD-001 — Read vs operate split
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting |
+| **2. Section** | FinanceCompanyScope + all FIN services + FE mutate pages |
+| **3. Reason** | is_owner had group-wide write; ADR-FIN-003 L03 requires hard split. |
+| **4. Layer type** | Backend + Frontend |
+| **5. Created at** | 2026-10-14 |
+| **6. Owner decision** | W1 BE + W2 FE |
+| **7. Suggestion** | assertCanReadCompany vs assertCanOperateCompany |
+| **Status** | **CLOSED** (2026-10-15) — W1 services + W2 FE gates; residual Access→Read on reports in progress/landed |
+
+### DEBT-FIN-HOLD-002 — Group observer role + grant
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | Identity + Finance |
+| **2. Section** | identity.group.observe + parent grant UI |
+| **3. Reason** | Explicit group-read product surface. |
+| **4. Layer type** | Backend + Frontend |
+| **5. Created at** | 2026-10-14 |
+| **6. Owner decision** | Shared with IDORG-T08/T09 |
+| **7. Suggestion** | Permission + role seed done; full parent grant UX may still deepen |
+| **Status** | **PARTIAL** — permission/role exist; optional grant-subtree UI residual |
+
+### DEBT-FIN-HOLD-003 — Branch document series from fiscal year
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | FinancialAccounting |
+| **2. Section** | Document numbering L07 |
+| **3. Reason** | Optional branch series from fiscal year start not implemented. |
+| **4. Layer type** | Backend |
+| **5. Created at** | 2026-10-14 |
+| **6. Owner decision** | FIN-HOLD-W3 |
+| **7. Suggestion** | Company setting branch_series_from_fiscal_year |
+| **Status** | **OPEN** |
 
 ---
 
@@ -150,3 +187,4 @@ Detail tables for FIN debts: see register history / prior sections in git; statu
 | 1.5 | 2026-10-14 | DEBT-ORG-012 OPEN |
 | 1.6 | 2026-10-14 | ADR-FIN-003; FIN-HOLD debts; CoA OPEN |
 | 1.7 | 2026-10-14 | **ADR-ID-ORG-004** + work breakdown; DEBT-ID-H01…H04 OPEN |
+| 1.8 | 2026-10-15 | H01–H04 CLOSED; FIN-HOLD-001 CLOSED; HOLD-002 PARTIAL; HOLD-003 OPEN |

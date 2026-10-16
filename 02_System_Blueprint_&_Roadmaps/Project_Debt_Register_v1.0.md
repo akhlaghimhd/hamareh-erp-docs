@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-16T14:35:00+00:00  
+**Last updated:** 2026-10-16T14:50:00+00:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8`.
@@ -123,12 +123,12 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 
 | Debt ID | Title | Status |
 |---------|-------|--------|
-| DEBT-FIN-CSN-001 | CoA per-company isolation | **PARTIAL** |
+| DEBT-FIN-CSN-001 | CoA per-company isolation | **CLOSED** |
 | DEBT-FIN-CSN-002 | Sequence concurrency | **CLOSED** |
 | DEBT-FIN-CSN-003 | FE report company UX | **CLOSED** |
 | DEBT-FIN-HOLD-001 | Read vs operate split | **CLOSED** |
 | DEBT-FIN-HOLD-002 | Group observer role + grant | **PARTIAL** |
-| DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **PARTIAL** |
+| DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **CLOSED** |
 
 ### DEBT-FIN-CSN-001 — CoA per-company isolation
 
@@ -141,7 +141,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-12 |
 | **6. Owner decision** | FIN-HOLD-W4 |
 | **7. Suggestion** | company_id on accounts + uniqueness + cloneTree |
-| **Status** | **PARTIAL** (2026-10-16) — BE: migration company_id + backfill primary, ChartOfAccountsService scoped list/create/update/delete + cloneTreeToCompany, AccountController company_id (primary fallback), FinanceDemoCoaSeeder + DemoFinanceCoaSeeder per company, JournalAndCoaFeatureTest + CoaPerCompanyTest green. FE: accountService accepts optional company_id. Residual: accounts-page UI company selector (page LOCKED until explicit owner unlock). |
+| **Status** | **CLOSED** (2026-10-16) — BE complete + FE accounts-page company selector + operate gates + accountService/hooks companyId; tests CoaPerCompanyTest + JournalAndCoaFeatureTest green. |
 
 ### DEBT-FIN-HOLD-001 — Read vs operate split
 
@@ -180,7 +180,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14 |
 | **6. Owner decision** | FIN-HOLD-W3 |
 | **7. Suggestion** | Company setting branch_series_from_fiscal_year |
-| **Status** | **PARTIAL** (2026-10-16) — BE+API+tests green; FE company-numbering page + hub; journal form optional branch selector applied locally (wire useFinanceCompanyScope). Residual: confirm journals-page push to origin/develop without PLACEHOLDER. |
+| **Status** | **CLOSED** (2026-10-16) — BE+API+tests; FE company-numbering page; journals formBranchId + useFinanceCompanyScope wired on origin/develop. |
 
 ---
 
@@ -203,3 +203,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.8 | 2026-10-15 | H01–H04 CLOSED; FIN-HOLD-001 CLOSED; HOLD-002 PARTIAL; HOLD-003 OPEN |
 | 1.9 | 2026-10-16 | FIN-HOLD-003 PARTIAL after W3 BE+API |
 | 2.0 | 2026-10-16 | FIN-HOLD-W4 CoA BE PARTIAL (CSN-001); HOLD-003 residual journals push |
+| 2.1 | 2026-10-16 | **CSN-001 CLOSED**; **HOLD-003 CLOSED** — FE residual path A complete |

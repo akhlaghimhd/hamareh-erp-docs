@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-15T11:30:00+02:00  
+**Last updated:** 2026-10-16T13:05:00+00:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8`.
@@ -128,7 +128,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-FIN-CSN-003 | FE report company UX | **CLOSED** |
 | DEBT-FIN-HOLD-001 | Read vs operate split | **CLOSED** |
 | DEBT-FIN-HOLD-002 | Group observer role + grant | **PARTIAL** |
-| DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **OPEN** |
+| DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **PARTIAL** |
 
 ### DEBT-FIN-HOLD-001 — Read vs operate split
 
@@ -141,7 +141,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **5. Created at** | 2026-10-14 |
 | **6. Owner decision** | W1 BE + W2 FE |
 | **7. Suggestion** | assertCanReadCompany vs assertCanOperateCompany |
-| **Status** | **CLOSED** (2026-10-15) — W1 services + W2 FE gates; residual Access→Read on reports in progress/landed |
+| **Status** | **CLOSED** (2026-10-15) — W1 services + W2 FE gates |
 
 ### DEBT-FIN-HOLD-002 — Group observer role + grant
 
@@ -162,12 +162,12 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |-------|--------|
 | **1. Module** | FinancialAccounting |
 | **2. Section** | Document numbering L07 |
-| **3. Reason** | Optional branch series from fiscal year start not implemented. |
-| **4. Layer type** | Backend |
+| **3. Reason** | Optional branch series from fiscal year start. |
+| **4. Layer type** | Backend + Frontend |
 | **5. Created at** | 2026-10-14 |
 | **6. Owner decision** | FIN-HOLD-W3 |
 | **7. Suggestion** | Company setting branch_series_from_fiscal_year |
-| **Status** | **OPEN** |
+| **Status** | **PARTIAL** (2026-10-16) — BE: migration + CompanyNumberingService + JournalEntryService branch sequences + API GET/enable/disable; tests BranchSeriesNumberingTest green. Residual: FE company settings UI + optional branch_id on journal create form |
 
 ---
 
@@ -188,3 +188,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.6 | 2026-10-14 | ADR-FIN-003; FIN-HOLD debts; CoA OPEN |
 | 1.7 | 2026-10-14 | **ADR-ID-ORG-004** + work breakdown; DEBT-ID-H01…H04 OPEN |
 | 1.8 | 2026-10-15 | H01–H04 CLOSED; FIN-HOLD-001 CLOSED; HOLD-002 PARTIAL; HOLD-003 OPEN |
+| 1.9 | 2026-10-16 | FIN-HOLD-003 PARTIAL after W3 BE+API |

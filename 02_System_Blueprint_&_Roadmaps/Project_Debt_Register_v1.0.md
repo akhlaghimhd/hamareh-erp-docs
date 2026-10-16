@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-16T14:50:00+00:00  
+**Last updated:** 2026-10-16T15:40:00+00:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8`.
@@ -166,8 +166,8 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **4. Layer type** | Backend + Frontend |
 | **5. Created at** | 2026-10-14 |
 | **6. Owner decision** | Shared with IDORG-T08/T09 |
-| **7. Suggestion** | Permission + role seed done; full parent grant UX may still deepen |
-| **Status** | **PARTIAL** — permission/role exist; optional grant-subtree UI residual |
+| **7. Suggestion** | Permission + role seed + AccessLayerCatalog finance.* done (W5); residual = optional parent grant-subtree UX only |
+| **Status** | **PARTIAL** — product-path usable; grant-subtree UI residual (non-blocking for medium SaaS) |
 
 ### DEBT-FIN-HOLD-003 — Branch document series from fiscal year
 
@@ -204,3 +204,4 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.9 | 2026-10-16 | FIN-HOLD-003 PARTIAL after W3 BE+API |
 | 2.0 | 2026-10-16 | FIN-HOLD-W4 CoA BE PARTIAL (CSN-001); HOLD-003 residual journals push |
 | 2.1 | 2026-10-16 | **CSN-001 CLOSED**; **HOLD-003 CLOSED** — FE residual path A complete |
+| 2.2 | 2026-10-16 | **FIN-HOLD-W5** AccessLayerCatalog + DefaultRoleCatalog finance.*; **FIN-HOLD-W6** L15 audit (operate_denied + journal.deleted.v1) CLOSED. Journal assertPostingAllowed(company, period) order fixed. HOLD-002 remains PARTIAL (grant UX residual). W7 Inventory/Sales deferred (no company-operate surface yet). |

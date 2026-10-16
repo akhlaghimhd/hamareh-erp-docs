@@ -3,7 +3,7 @@
 **Document ID:** DEBT-REGISTER-v1.0  
 **SSOT for open project debts across all layers/modules**  
 **Created:** 2026-10-06  
-**Last updated:** 2026-10-16T15:40:00+00:00  
+**Last updated:** 2026-10-16T19:50:00+00:00  
 **Repos:** akhlaghimhd/hamareh-erp-docs  
 
 > **History note:** Full DEBT-ID-001…011 and DEBT-ORG-001…011 detail tables remain available at git commit `cf30dd8`.
@@ -22,7 +22,9 @@
 
 Every new debt entry **must** include: Module, Section, Reason, Layer type, Created at, Owner decision, Suggestion.  
 Closed debts: mark **Status: CLOSED** (do not delete).  
-Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
+Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED  
+
+**Addendum (2026-10-16 — user law):** Residual work is never “optional” without a debt row. Either implement and **CLOSED**, or keep **OPEN/DEFERRED** with concrete remaining work. Do not dismiss product-path items as non-blocking without registration.
 
 ---
 
@@ -34,6 +36,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-PLT-002 | Dual-approval tenant settings UI | **CLOSED** |
 | DEBT-PLT-003 | Tenant retention setting UI + purge job | **PARTIAL** |
 | **DEBT-ORG-012** | Org hierarchy depth limits in Feature Pack / Platform Owner | **OPEN** |
+| **DEBT-HOLD-W7** | Non-finance modules company operate (Inventory / Sales / Purch) | **OPEN** |
 
 ---
 
@@ -56,13 +59,13 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 
 | Field | Value |
 |-------|--------|
-| **1. Module** | Organization + SaasAdmin Feature Pack |
-| **2. Section** | Max company/branch tree depth |
-| **3. Reason** | Unbounded depth not desired for mid-size SaaS; pack must limit. |
-| **4. Layer type** | Architecture + Backend |
+| **1. Module** | Organization + SaasAdmin (Platform Owner) |
+| **2. Section** | Max company / branch tree depth via Feature Pack |
+| **3. Reason** | Unbounded depth is not desired for mid-size SaaS; product law requires pack-controlled ceiling (ADR-FIN-003 L16 + ADR-ID-ORG-004 G13 / IDORG-T19). |
+| **4. Layer type** | Architecture + Backend + Platform Owner FE |
 | **5. Created at** | 2026-10-14T06:40:00+02:00 |
-| **6. Owner decision** | OPEN; ADR-FIN-003 L16 + ADR-ID-ORG-004 G13 |
-| **7. Suggestion** | See IDORG-T19 work breakdown |
+| **6. Owner decision** | **OPEN — must implement.** Not deferred as optional. Blocked only on shipping FeatureCatalog keys + enforce in create services. |
+| **7. Suggestion** | (1) FeatureCatalog keys e.g. `org.max_company_depth` / `org.max_branch_depth` (or pack tiers); (2) tenant entitlement; (3) `CompanyService::create` assert depth from primary root ≤ pack limit; (4) same for `BranchService`; (5) FA error on exceed; (6) Platform Owner admin UI for pack values. |
 | **Status** | **OPEN** |
 
 ### DEBT-ID-H01 — Holding Identity power boundary
@@ -113,7 +116,7 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | **3. Reason** | HoldingAccess is COMPANY-centric; branch manager product need open. |
 | **4. Layer type** | Architecture + Backend + Frontend |
 | **5. Created at** | 2026-10-14T07:30:00+02:00 |
-| **6. Owner decision** | G09, G14 accepted — implement or explicit non-goal after Wave 3 decision |
+| **6. Owner decision** | G09, G14 accepted — implement (user chose branch = Identity admin) |
 | **7. Suggestion** | Wave 3 IDORG-T15–T17 |
 | **Status** | **CLOSED** (2026-10-15) — T15–T17 branch admin on develop |
 
@@ -127,8 +130,9 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | DEBT-FIN-CSN-002 | Sequence concurrency | **CLOSED** |
 | DEBT-FIN-CSN-003 | FE report company UX | **CLOSED** |
 | DEBT-FIN-HOLD-001 | Read vs operate split | **CLOSED** |
-| DEBT-FIN-HOLD-002 | Group observer role + grant | **PARTIAL** |
+| DEBT-FIN-HOLD-002 | Group observer role + grant | **CLOSED** |
 | DEBT-FIN-HOLD-003 | Branch document series from fiscal year | **CLOSED** |
+| **DEBT-HOLD-W7** | Non-finance company operate isolation | **OPEN** |
 
 ### DEBT-FIN-CSN-001 — CoA per-company isolation
 
@@ -161,13 +165,13 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | Field | Value |
 |-------|--------|
 | **1. Module** | Identity + Finance |
-| **2. Section** | identity.group.observe + parent grant UI |
-| **3. Reason** | Explicit group-read product surface. |
+| **2. Section** | identity.group.observe + parent grant |
+| **3. Reason** | Explicit group-read product surface required by ADR-FIN-003 / ADR-ID-ORG-004. |
 | **4. Layer type** | Backend + Frontend |
 | **5. Created at** | 2026-10-14 |
-| **6. Owner decision** | Shared with IDORG-T08/T09 |
-| **7. Suggestion** | Permission + role seed + AccessLayerCatalog finance.* done (W5); residual = optional parent grant-subtree UX only |
-| **Status** | **PARTIAL** — product-path usable; grant-subtree UI residual (non-blocking for medium SaaS) |
+| **6. Owner decision** | Shared with IDORG-T08/T09. **Grant surface for medium SaaS = existing Identity APIs/UI** (role assign + scope assign), not a separate subtree wizard. |
+| **7. Suggestion** | Delivered path: (1) perm `identity.group.observe` + role template `group-observer`; (2) AccessLayerCatalog `finance.view` for observer / `finance.operate` for company-operator; (3) FE AssignRolesCard + AssignScopesCard gated by `canMutateMembers` (technical_owner / soft_sme only); (4) FE read-only banners on members + finance mutate pages for observer / technical owner. |
+| **Status** | **CLOSED** (2026-10-16) — product grant path complete via Identity role/scope assignment; no separate wizard in scope. |
 
 ### DEBT-FIN-HOLD-003 — Branch document series from fiscal year
 
@@ -175,12 +179,25 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |-------|--------|
 | **1. Module** | FinancialAccounting |
 | **2. Section** | Document numbering L07 |
-| **3. Reason** | Optional branch series from fiscal year start. |
+| **3. Reason** | Branch series from fiscal year start when enabled. |
 | **4. Layer type** | Backend + Frontend |
 | **5. Created at** | 2026-10-14 |
 | **6. Owner decision** | FIN-HOLD-W3 |
 | **7. Suggestion** | Company setting branch_series_from_fiscal_year |
 | **Status** | **CLOSED** (2026-10-16) — BE+API+tests; FE company-numbering page; journals formBranchId + useFinanceCompanyScope wired on origin/develop. |
+
+### DEBT-HOLD-W7 — Non-finance modules company operate isolation
+
+| Field | Value |
+|-------|--------|
+| **1. Module** | Inventory (+ future Sales / Purch operational documents) |
+| **2. Section** | FIN-HOLD-W7 / ADR-FIN-003 cross-module read≠operate |
+| **3. Reason** | ADR requires the same holding isolation on non-finance modules. Inventory is currently **WAREHOUSE-scoped**, not company-operate. Sales/Purch commercial document engines are not shipped yet. |
+| **4. Layer type** | Architecture + Backend (+ FE when module UIs exist) |
+| **5. Created at** | 2026-10-16T19:50:00+00:00 |
+| **6. Owner decision** | **OPEN — required by ADR.** Do not mark CLOSED until company-bound operational documents exist and use operate gates. Do not force FinanceCompanyScope onto pure warehouse masters. |
+| **7. Suggestion** | When Inventory posts company-level documents: shared Holding operate assert (or FinanceCompanyScope-equivalent). When Sales/Purch ship: wire at document create/post. Track progress under this debt only. |
+| **Status** | **OPEN** |
 
 ---
 
@@ -190,6 +207,20 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 |----------|--------|
 | `ID_ORG_Holding_Remediation_Work_Breakdown_v1.0.md` | Tasks IDORG-T01…T25 for gaps G01…G25 |
 | `ADR-FIN-003` §4 | FIN-HOLD waves W0…W8 |
+
+### Holding / FIN-HOLD wave status (2026-10-16)
+
+| Wave | Deliverable | Status |
+|------|-------------|--------|
+| IDORG T01–T17 | Actor kinds, list/mutate, catalog, observer, branch admin, FE | **DONE** |
+| FIN-HOLD W1 | assertCanRead vs assertCanOperate on FIN services | **DONE** |
+| FIN-HOLD W2 | FE mutate gates | **DONE** |
+| FIN-HOLD W3 | Branch series + FE numbering + journal branch_id | **DONE** |
+| FIN-HOLD W4 | CoA per company + FE selector | **DONE** |
+| FIN-HOLD W5 | AccessLayerCatalog + DefaultRoleCatalog finance.* | **DONE** |
+| FIN-HOLD W6 | operate_denied + journal.deleted audit | **DONE** |
+| FIN-HOLD W7 | Non-finance modules | **OPEN → DEBT-HOLD-W7** |
+| Depth pack | DEBT-ORG-012 | **OPEN** |
 
 ---
 
@@ -204,4 +235,5 @@ Status values: OPEN | BLOCKED | PARTIAL | DEFERRED | CLOSED
 | 1.9 | 2026-10-16 | FIN-HOLD-003 PARTIAL after W3 BE+API |
 | 2.0 | 2026-10-16 | FIN-HOLD-W4 CoA BE PARTIAL (CSN-001); HOLD-003 residual journals push |
 | 2.1 | 2026-10-16 | **CSN-001 CLOSED**; **HOLD-003 CLOSED** — FE residual path A complete |
-| 2.2 | 2026-10-16 | **FIN-HOLD-W5** AccessLayerCatalog + DefaultRoleCatalog finance.*; **FIN-HOLD-W6** L15 audit (operate_denied + journal.deleted.v1) CLOSED. Journal assertPostingAllowed(company, period) order fixed. HOLD-002 remains PARTIAL (grant UX residual). W7 Inventory/Sales deferred (no company-operate surface yet). |
+| 2.2 | 2026-10-16 | **FIN-HOLD-W5** AccessLayerCatalog + DefaultRoleCatalog finance.*; **FIN-HOLD-W6** L15 audit CLOSED. Journal assertPostingAllowed order fixed. |
+| **2.3** | **2026-10-16** | **HOLD-002 CLOSED** (grant = Identity role/scope assign). **DEBT-HOLD-W7 OPEN** registered (non-finance). **ORG-012** remains OPEN with concrete implement path. User law: no optional residual without debt row. |
